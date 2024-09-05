@@ -1,30 +1,32 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <router-view />
 </template>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Special+Elite&display=swap");
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #f5f5f5; /* Default background color */
 }
 
-nav {
-  padding: 30px;
+#app {
+  min-height: 100%;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+.dealer-layout {
+  background-color: #f5f5f5; /* Dealer background color */
+}
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.wholesaler-layout {
+  background-color: #121212; /* Wholesaler background color */
+  color: white; /* Ensure text is readable */
+  min-height: 100vh; /* Ensure it takes the full viewport height */
+  overflow: scroll;
+  overflow-x: hidden;
+  scrollbar-color: gray #121212;
 }
 </style>

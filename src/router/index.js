@@ -1,25 +1,55 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import store from "@/store";
+import LoginPage from "@/views/LoginPage/LoginPage.vue";
+import CustomerHomePage from "@/views/CustomerHomePage/CustomerHomePage.vue";
+import StaffDashboardPage from "@/views/StaffDashboardPage/StaffDashboardPage.vue";
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: "/login",
+    name: "login",
+    component: LoginPage,
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+    path: "/staff",
+    meta: { requiresAuth: true, account_type: "staff" },
+    children: [
+      {
+        path: "dashboard",
+        name: "StaffDashboardPage",
+        component: StaffDashboardPage,
+      },
+    ],
+  },
+  {
+    path: "/customer",
+    meta: { requiresAuth: true, account_type: "customer" },
+    children: [
+      {
+        path: "home",
+        name: "CustomerHomePage",
+        component: CustomerHomePage,
+      },
+    ],
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const userAccountType = store.getters.getUserAccountType;
+
+  if (requiresAuth && !store.getters.getAuthToken) {
+    next("/login");
+  } else if (requiresAuth && userAccountType !== to.meta.account_type) {
+    next("/login"); // Redirect to login if role does not match
+  } else {
+    next();
+  }
+});
+
+export default router;
