@@ -3,15 +3,15 @@
     <div class="c-1">
       <h2 class="h-1">Welcome to DayCare</h2>
       <form @submit.prevent="handleLogin">
-        <div class="form-group">
+        <div class="form-group mb-10">
           <label for="username">Username</label>
           <input v-model="username" type="text" id="username" required />
         </div>
-        <div class="form-group">
+        <div class="form-group mb-10">
           <label class="" for="password">Password</label>
           <input v-model="password" type="password" id="password" required />
         </div>
-        <div class="form-group">
+        <div class="form-group mb-10">
           <button class="button button--tertiary" type="submit">Login</button>
         </div>
         <p class="p-text-1">

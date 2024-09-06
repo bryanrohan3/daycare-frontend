@@ -1,28 +1,11 @@
 <template>
   <div class="centre">
-    <div class="c-1 c-1-wide mt-30 mb-30">
-      <h2 class="h-1">Welcome to DayCare</h2>
+    <div class="c-1 mt-30 mb-30">
+      <h2 class="h-1 h-center">Welcome to DayCare</h2>
       <p class="p-text-1">Sign up as a new customer</p>
       <form @submit.prevent="handleSignUp">
-        <div class="form-group">
-          <label for="firstName">First Name</label>
-          <input
-            v-model="newUser.first_name"
-            type="text"
-            id="firstName"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <label for="lastName">Last Name</label>
-          <input
-            v-model="newUser.last_name"
-            type="text"
-            id="lastName"
-            required
-          />
-        </div>
-        <div class="form-group">
+        <!-- Username Alone -->
+        <div class="form-group mb-10">
           <label for="username">Username</label>
           <input
             v-model="newUser.username"
@@ -31,32 +14,64 @@
             required
           />
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input v-model="newUser.email" type="email" id="email" required />
+
+        <!-- First Name and Last Name Side by Side -->
+        <div class="form-row mb-10">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input
+              v-model="newUser.first_name"
+              type="text"
+              id="firstName"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input
+              v-model="newUser.last_name"
+              type="text"
+              id="lastName"
+              required
+            />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="phone">Phone</label>
-          <input v-model="newUser.phone" type="tel" id="phone" required />
+
+        <!-- Email and Phone Side by Side -->
+        <div class="form-row mb-10">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input v-model="newUser.email" type="email" id="email" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input v-model="newUser.phone" type="tel" id="phone" required />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            v-model="newUser.password"
-            type="password"
-            id="password"
-            required
-          />
+
+        <!-- Password and Confirm Password Side by Side -->
+        <div class="form-row mb-10">
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              v-model="newUser.password"
+              type="password"
+              id="password"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input
+              v-model="newUser.confirmPassword"
+              type="password"
+              id="confirmPassword"
+              required
+            />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input
-            v-model="newUser.confirmPassword"
-            type="password"
-            id="confirmPassword"
-            required
-          />
-        </div>
+
+        <!-- Submit Button -->
         <div class="form-group">
           <button class="button button--tertiary" type="submit">Sign Up</button>
         </div>

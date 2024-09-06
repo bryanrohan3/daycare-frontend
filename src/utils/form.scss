@@ -1,6 +1,8 @@
 /* Utility styles for forms */
 .form-group {
-  margin-bottom: 1.5rem;
+  flex: 1; /* Allow each form group to grow equally */
+  min-width: 0; /* Prevent form groups from shrinking below their content */
+  box-sizing: border-box; /* Ensure padding and border are included in width */
 }
 
 .form-group label {
@@ -11,9 +13,9 @@
 }
 
 .form-group input {
-  width: 100%;
+  width: 100%; /* Full width of the form group */
   padding: 10px;
-  font-size: 14px;
+  font-size: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   box-sizing: border-box;
@@ -21,6 +23,17 @@
 }
 
 .form-group input:focus {
-  border-color: #f26764;
   outline: none;
+}
+
+/* Styles for the form row to split the children 50/50 */
+.form-row {
+  display: flex;
+  gap: 1rem; /* Space between form groups */
+}
+
+/* Adjust the width of form groups to take 50% each */
+.form-row .form-group {
+  flex: 1; /* Grow equally */
+  max-width: 100%; /* Ensure it doesn’t exceed the container width */
 }
