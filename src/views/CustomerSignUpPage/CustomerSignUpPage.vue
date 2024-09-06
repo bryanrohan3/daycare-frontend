@@ -4,53 +4,21 @@
       <h2 class="h-1 h-center">Welcome to DayCare</h2>
       <p class="p-text-1">Sign up as a new customer</p>
       <form @submit.prevent="handleSignUp">
-        <!-- Username Alone -->
-        <div class="form-group mb-10">
-          <label for="username">Username</label>
-          <input
-            v-model="newUser.username"
-            type="text"
-            id="username"
-            required
-          />
-        </div>
-
-        <!-- First Name and Last Name Side by Side -->
-        <div class="form-row mb-10">
-          <div class="form-group">
-            <label for="firstName">First Name</label>
+        <div v-for="(field, index) in formFields" :key="index">
+          <!-- Render the form group based on the field configuration -->
+          <div :class="['form-group', field.row ? 'mb-10' : '']">
+            <label :for="field.id">{{ field.label }}</label>
             <input
-              v-model="newUser.first_name"
-              type="text"
-              id="firstName"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input
-              v-model="newUser.last_name"
-              type="text"
-              id="lastName"
-              required
+              v-model="newUser[field.model]"
+              :type="field.type"
+              :id="field.id"
+              :required="field.required"
             />
           </div>
         </div>
 
-        <!-- Email and Phone Side by Side -->
-        <div class="form-row mb-10">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input v-model="newUser.email" type="email" id="email" required />
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone</label>
-            <input v-model="newUser.phone" type="tel" id="phone" required />
-          </div>
-        </div>
-
-        <!-- Password and Confirm Password Side by Side -->
-        <div class="form-row mb-10">
+        <div class="form-row mb-10" v-if="showPasswordFields">
+          <!-- Password and Confirm Password Side by Side -->
           <div class="form-group">
             <label for="password">Password</label>
             <input
@@ -85,6 +53,7 @@
 
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import { signUpFormField } from "@/config/formFieldConfig";
 
 export default {
   name: "CustomerSignUpPage",
@@ -99,6 +68,8 @@ export default {
         last_name: "",
         phone: "",
       },
+      formFields: signUpFormField,
+      showPasswordFields: true,
     };
   },
   methods: {

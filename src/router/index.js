@@ -3,7 +3,7 @@ import store from "@/store";
 import LoginPage from "@/views/LoginPage/LoginPage.vue";
 import CustomerHomePage from "@/views/CustomerHomePage/CustomerHomePage.vue";
 import StaffDashboardPage from "@/views/StaffDashboardPage/StaffDashboardPage.vue";
-import CustomerSignUpPage from "@/views/CustomerHomePage/CustomerSignUpPage.vue";
+import CustomerSignUpPage from "@/views/CustomerSignUpPage/CustomerSignUpPage.vue";
 
 const routes = [
   {
