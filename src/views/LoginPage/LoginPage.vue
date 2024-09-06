@@ -3,13 +3,18 @@
     <div class="c-1">
       <h2 class="h-1">Welcome to DayCare</h2>
       <form @submit.prevent="handleLogin">
-        <div class="form-group mb-10">
-          <label for="username">Username</label>
-          <input v-model="username" type="text" id="username" required />
-        </div>
-        <div class="form-group mb-10">
-          <label class="" for="password">Password</label>
-          <input v-model="password" type="password" id="password" required />
+        <div
+          v-for="(field, index) in formFields"
+          :key="index"
+          class="form-group mb-10"
+        >
+          <label :for="field.id">{{ field.label }}</label>
+          <input
+            v-model="formData[field.model]"
+            :type="field.type"
+            :id="field.id"
+            :required="field.required"
+          />
         </div>
         <div class="form-group mb-10">
           <button class="button button--tertiary" type="submit">Login</button>
@@ -26,26 +31,29 @@
 <script>
 import { mapMutations } from "vuex";
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import { loginFormFields } from "@/config/formFieldConfig";
 
 export default {
   name: "LoginPage",
   data() {
     return {
-      username: "",
-      password: "",
+      formData: {
+        username: "",
+        password: "",
+      },
       errorMessage: "",
+      formFields: loginFormFields,
     };
   },
   methods: {
     async handleLogin() {
-      console.log("Logging Attempt:", this.username);
-      console.log("Password Attempt:", this.password);
-      console.log("Token: ", this.token);
+      console.log("Logging Attempt:", this.formData.username);
+      console.log("Password Attempt:", this.formData.password);
       try {
-        const response = await axiosInstance.post(endpoints.login, {
-          username: this.username,
-          password: this.password,
-        });
+        const response = await axiosInstance.post(
+          endpoints.login,
+          this.formData
+        );
         console.log("Login response ->", response.data);
 
         const { token, user } = response.data;
@@ -53,7 +61,7 @@ export default {
         // Storing the user's token and User Profile in the Store
         this.setAuthToken(token);
         this.setUserProfile(user);
-        this.setUserAccountType(user.account_type); // Fixed the method call
+        this.setUserAccountType(user.account_type);
 
         console.log(
           "Login Successful, Redirecting to Screen based on user Role: ",
@@ -63,14 +71,14 @@ export default {
           if (user.account_type === "staff") {
             this.$router.push({ name: "StaffDashboardPage" });
           } else if (user.account_type === "customer") {
-            this.$router.push({ name: "CustomerHomePage" }); // Corrected route name
+            this.$router.push({ name: "CustomerHomePage" });
           } else {
             this.errorMessage = "Invalid User Type";
           }
         }, 500);
       } catch (error) {
-        console.error("Login error:", error); // Log the error for debugging
-        this.errorMessage = "Invalid Username or Password"; // You can refine this based on the error response
+        console.error("Login error:", error);
+        this.errorMessage = "Invalid Username or Password";
       }
     },
     ...mapMutations(["setAuthToken", "setUserProfile", "setUserAccountType"]),

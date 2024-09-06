@@ -40,3 +40,20 @@ export const signUpFormField = [
     required: true,
   },
 ];
+
+export const loginFormFields = [
+  {
+    id: "username",
+    label: "Username",
+    type: "text",
+    model: "username",
+    required: true,
+  },
+  {
+    id: "password",
+    label: "Password",
+    type: "password",
+    model: "password",
+    required: true,
+  },
+];
