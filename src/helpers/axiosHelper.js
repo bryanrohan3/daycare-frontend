@@ -32,6 +32,7 @@ axiosInstance.interceptors.request.use(
 
 const endpoints = {
   login: apiConstants.api_hostname + "users/login/",
+  customerSignUp: apiConstants.api_hostname + "customer-profile/",
 };
 
 export { axiosInstance, endpoints };

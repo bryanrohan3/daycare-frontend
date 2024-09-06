@@ -6,32 +6,52 @@
       <form @submit.prevent="handleSignUp">
         <div class="form-group">
           <label for="firstName">First Name</label>
-          <input v-model="firstName" type="text" id="firstName" required />
+          <input
+            v-model="newUser.first_name"
+            type="text"
+            id="firstName"
+            required
+          />
         </div>
         <div class="form-group">
           <label for="lastName">Last Name</label>
-          <input v-model="lastName" type="text" id="lastName" required />
+          <input
+            v-model="newUser.last_name"
+            type="text"
+            id="lastName"
+            required
+          />
         </div>
         <div class="form-group">
           <label for="username">Username</label>
-          <input v-model="username" type="text" id="username" required />
+          <input
+            v-model="newUser.username"
+            type="text"
+            id="username"
+            required
+          />
         </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input v-model="email" type="email" id="email" required />
+          <input v-model="newUser.email" type="email" id="email" required />
         </div>
         <div class="form-group">
           <label for="phone">Phone</label>
-          <input v-model="phone" type="tel" id="phone" required />
+          <input v-model="newUser.phone" type="tel" id="phone" required />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input v-model="password" type="password" id="password" required />
+          <input
+            v-model="newUser.password"
+            type="password"
+            id="password"
+            required
+          />
         </div>
         <div class="form-group">
           <label for="confirmPassword">Confirm Password</label>
           <input
-            v-model="confirmPassword"
+            v-model="newUser.confirmPassword"
             type="password"
             id="confirmPassword"
             required
@@ -49,34 +69,56 @@
 </template>
 
 <script>
+import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+
 export default {
   name: "CustomerSignUpPage",
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: "",
+      newUser: {
+        username: "",
+        password: "",
+        confirmPassword: "",
+        email: "",
+        first_name: "",
+        last_name: "",
+        phone: "",
+      },
     };
   },
   methods: {
-    handleSignUp() {
-      if (this.password !== this.confirmPassword) {
+    async handleSignUp() {
+      // Check if password and confirm password match
+      if (this.newUser.password !== this.newUser.confirmPassword) {
         alert("Passwords do not match!");
         return;
       }
-      // TODO: Handle Cusotmer Signup
-      // endpoint is customer-profile
-      // post.(endpoint.customer-sign-up)
-      // redirect to customer side
+
+      try {
+        const payload = {
+          user: {
+            username: this.newUser.username,
+            password: this.newUser.password,
+            email: this.newUser.email,
+            first_name: this.newUser.first_name,
+            last_name: this.newUser.last_name,
+          },
+          phone: this.newUser.phone,
+        };
+
+        const response = await axiosInstance.post(
+          endpoints.customerSignUp,
+          payload
+        );
+        alert("Sign up successful!");
+        this.$router.push({ name: "CustomerHomePage" });
+      } catch (error) {
+        console.error("Error creating user:", error);
+        alert("Failed to create user. Please try again.");
+      }
     },
   },
 };
 </script>
 
-<style scoped>
-/* Your existing styles here */
-</style>
+<style scoped></style>
