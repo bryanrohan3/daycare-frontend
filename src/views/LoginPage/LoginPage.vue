@@ -1,20 +1,22 @@
 <template>
-  <div>
-    <h2>Welcome to DayDare</h2>
-    <form @submit.prevent="handleLogin">
-      <div>
-        <label>Username</label>
-        <input v-model="username" type="text" id="username" required />
-      </div>
-      <div>
-        <label>Password</label>
-        <input v-model="password" type="password" id="password" required />
-      </div>
-      <div>
-        <button type="submit">Login</button>
-      </div>
-    </form>
-    <p v-if="errorMessage">{{ errorMessage }}</p>
+  <div class="centre">
+    <div class="c-1">
+      <h2 class="h-1">Welcome to DayCare</h2>
+      <form @submit.prevent="handleLogin">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input v-model="username" type="text" id="username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input v-model="password" type="password" id="password" required />
+        </div>
+        <div class="form-group">
+          <button class="button button--tertiary" type="submit">Login</button>
+        </div>
+      </form>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
   </div>
 </template>
 
@@ -72,3 +74,18 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@import "@/utils/buttons.scss";
+@import "@/utils/containers.scss";
+@import "@/utils/headings.scss";
+@import "@/utils/form.scss";
+@import "@/utils/margins.scss";
+
+/* Optional additional styles if needed */
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+</style>
