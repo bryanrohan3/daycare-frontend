@@ -1,7 +1,7 @@
 <template>
   <div class="centre">
     <div class="c-1">
-      <h2 class="h-1">Welcome to DayCare</h2>
+      <h2 class="h-1 h-center">Welcome to DayCare</h2>
       <form @submit.prevent="handleLogin">
         <div
           v-for="(field, index) in formFields"
