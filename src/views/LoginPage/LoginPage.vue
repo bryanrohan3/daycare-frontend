@@ -8,12 +8,15 @@
           <input v-model="username" type="text" id="username" required />
         </div>
         <div class="form-group">
-          <label for="password">Password</label>
+          <label class="" for="password">Password</label>
           <input v-model="password" type="password" id="password" required />
         </div>
         <div class="form-group">
           <button class="button button--tertiary" type="submit">Login</button>
         </div>
+        <p class="p-text-1">
+          New Customer? <router-link to="/signup">Register</router-link>
+        </p>
       </form>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>

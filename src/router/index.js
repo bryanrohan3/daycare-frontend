@@ -3,6 +3,7 @@ import store from "@/store";
 import LoginPage from "@/views/LoginPage/LoginPage.vue";
 import CustomerHomePage from "@/views/CustomerHomePage/CustomerHomePage.vue";
 import StaffDashboardPage from "@/views/StaffDashboardPage/StaffDashboardPage.vue";
+import CustomerSignUpPage from "@/views/CustomerHomePage/CustomerSignUpPage.vue";
 
 const routes = [
   {
@@ -10,6 +11,13 @@ const routes = [
     name: "login",
     component: LoginPage,
   },
+
+  {
+    path: "/signup",
+    name: "signup",
+    component: CustomerSignUpPage,
+  },
+
   {
     path: "/staff",
     meta: { requiresAuth: true, account_type: "staff" },
