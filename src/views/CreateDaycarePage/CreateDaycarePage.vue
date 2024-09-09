@@ -167,26 +167,12 @@ export default {
 
       return form;
     },
-    formatTime(time) {
-      if (!time) return ""; // Return empty if no time is provided
-      const [hours, minutes] = time.split(":");
-      return `${hours}:${minutes}:00`; // Append seconds to the time
-    },
     convertEmptyToNull(openingHours) {
-      return openingHours.map((item) => {
-        if (item.closed) {
-          return {
-            ...item,
-            from_hour: null,
-            to_hour: null,
-          };
-        }
-        return {
-          ...item,
-          from_hour: item.from_hour.trim() === "" ? null : item.from_hour,
-          to_hour: item.to_hour.trim() === "" ? null : item.to_hour,
-        };
-      });
+      return openingHours.map((item) => ({
+        ...item,
+        from_hour: item.from_hour === "" ? null : item.from_hour,
+        to_hour: item.to_hour === "" ? null : item.to_hour,
+      }));
     },
     async fetchCurrentStaffProfile() {
       try {
@@ -199,10 +185,12 @@ export default {
     },
     async submitForm() {
       try {
+        // Convert empty time fields to null
         const updatedOpeningHours = this.convertEmptyToNull(
           this.form.opening_hours
         );
 
+        // Format the time fields correctly
         const formattedOpeningHours = updatedOpeningHours.map((item) => ({
           ...item,
           from_hour: this.formatTime(item.from_hour),
@@ -242,6 +230,10 @@ export default {
           alert("An unexpected error occurred. Please try again.");
         }
       }
+    },
+    formatTime(time) {
+      // Optionally handle formatting of time here if needed
+      return time;
     },
   },
 };
