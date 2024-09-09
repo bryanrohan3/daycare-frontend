@@ -38,6 +38,7 @@
                     :id="`${subField.id}-${itemIndex}`"
                     v-model="item[subField.model]"
                     :required="subField.required"
+                    disabled
                   >
                     <option
                       v-for="option in subField.options"
@@ -127,7 +128,7 @@
 
 <script>
 import { createDaycareFields } from "@/config/formFieldConfig";
-import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import { fetchCurrentStaffProfile } from "@/helpers/fetchCurrentStaffProfile";
 
 export default {
   name: "CreateDaycarePage",
@@ -139,7 +140,11 @@ export default {
     };
   },
   async created() {
-    await this.fetchCurrentStaffProfile();
+    try {
+      this.currentUser = await fetchCurrentStaffProfile();
+    } catch (error) {
+      console.error("Error initializing staff profile:", error);
+    }
   },
   methods: {
     initializeForm(fields) {
@@ -169,15 +174,6 @@ export default {
         from_hour: item.from_hour === "" ? null : item.from_hour,
         to_hour: item.to_hour === "" ? null : item.to_hour,
       }));
-    },
-    async fetchCurrentStaffProfile() {
-      try {
-        const response = await axiosInstance.get(endpoints.currentStaffProfile);
-        this.currentUser = response.data;
-        console.log("Current Staff Profile:", this.currentUser);
-      } catch (error) {
-        console.error("Error fetching current staff profile:", error);
-      }
     },
     async submitForm() {
       try {
