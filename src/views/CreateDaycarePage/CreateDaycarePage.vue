@@ -124,13 +124,14 @@
       </div>
 
       <!-- Submit Button -->
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="button button--tertiary">Submit</button>
     </form>
   </div>
 </template>
 
 <script>
 import { createDaycareFields } from "@/config/formFieldConfig";
+import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 
 export default {
   name: "CreateDaycarePage",
@@ -138,7 +139,11 @@ export default {
     return {
       createDaycareFields: createDaycareFields,
       form: this.initializeForm(createDaycareFields),
+      currentUser: null,
     };
+  },
+  async created() {
+    await this.fetchCurrentStaffProfile();
   },
   methods: {
     initializeForm(fields) {
@@ -146,11 +151,9 @@ export default {
 
       fields.forEach((field) => {
         if (field.type === "array" && field.model === "opening_hours") {
-          // Find the options array for the 'day' field
           const dayOptions =
             field.fields.find((f) => f.type === "select")?.options || [];
 
-          // Initialize form with days' names
           form[field.model] = dayOptions.map((option) => ({
             day: option.value, // Default value for 'day'
             from_hour: "",
@@ -164,32 +167,80 @@ export default {
 
       return form;
     },
-    getComponentType(type) {
-      switch (type) {
-        case "text":
-        case "number":
-        case "email":
-        case "time":
-          return "input";
-        case "select":
-          return "select";
-        case "checkbox":
-          return "input";
-        default:
-          return "input";
+    formatTime(time) {
+      if (!time) return ""; // Return empty if no time is provided
+      const [hours, minutes] = time.split(":");
+      return `${hours}:${minutes}:00`; // Append seconds to the time
+    },
+    convertEmptyToNull(openingHours) {
+      return openingHours.map((item) => {
+        if (item.closed) {
+          return {
+            ...item,
+            from_hour: null,
+            to_hour: null,
+          };
+        }
+        return {
+          ...item,
+          from_hour: item.from_hour.trim() === "" ? null : item.from_hour,
+          to_hour: item.to_hour.trim() === "" ? null : item.to_hour,
+        };
+      });
+    },
+    async fetchCurrentStaffProfile() {
+      try {
+        const response = await axiosInstance.get(endpoints.currentStaffProfile);
+        this.currentUser = response.data;
+        console.log("Current Staff Profile:", this.currentUser);
+      } catch (error) {
+        console.error("Error fetching current staff profile:", error);
       }
     },
-    submitForm() {
+    async submitForm() {
       try {
-        console.log("Daycare data:", this.form);
+        const updatedOpeningHours = this.convertEmptyToNull(
+          this.form.opening_hours
+        );
 
-        // Example API call
-        // await axios.post('/api/daycares', this.form);
+        const formattedOpeningHours = updatedOpeningHours.map((item) => ({
+          ...item,
+          from_hour: this.formatTime(item.from_hour),
+          to_hour: this.formatTime(item.to_hour),
+        }));
+
+        const formData = {
+          ...this.form,
+          opening_hours: formattedOpeningHours,
+          createdBy: this.currentUser.id,
+        };
+
+        console.log("Daycare data being submitted:", formData);
+
+        const response = await axiosInstance.post(
+          endpoints.createDaycare,
+          formData
+        );
+
+        console.log("Daycare created successfully. Response:", response.data);
 
         alert("Daycare created successfully!");
       } catch (error) {
         console.error("Error creating daycare:", error);
-        alert("Failed to create daycare. Please try again.");
+
+        if (error.response) {
+          console.error("Error response status:", error.response.status);
+          console.error("Error response headers:", error.response.headers);
+          console.error("Error response data:", error.response.data);
+
+          const errorMessage =
+            error.response.data.detail ||
+            "Failed to create daycare. Please try again.";
+          alert(errorMessage);
+        } else {
+          console.error("Error message:", error.message);
+          alert("An unexpected error occurred. Please try again.");
+        }
       }
     },
   },

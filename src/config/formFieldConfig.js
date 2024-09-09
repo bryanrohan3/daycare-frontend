@@ -126,13 +126,6 @@ export const createDaycareFields = [
     required: true,
   },
   {
-    id: "pet_types",
-    label: "Pet Types",
-    type: "text",
-    model: "pet_types",
-    required: false,
-  },
-  {
     id: "opening_hours",
     label: "Opening Hours",
     type: "array",
