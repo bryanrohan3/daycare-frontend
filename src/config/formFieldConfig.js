@@ -1,4 +1,4 @@
-// src/config/formFieldsConfig.js
+// Form fields for sign up for Customer
 export const signUpFormField = [
   {
     id: "username",
@@ -41,6 +41,7 @@ export const signUpFormField = [
   },
 ];
 
+// Form fields for login
 export const loginFormFields = [
   {
     id: "username",
@@ -58,6 +59,7 @@ export const loginFormFields = [
   },
 ];
 
+// Form fields for creating a new daycare api/daycare
 export const createDaycareFields = [
   {
     id: "daycare_name",

@@ -1,3 +1,6 @@
+<!-- We can reuse this file for "Edit Daycare" -->
+<!-- Also reuse this file for seeing Daycare Information (Viewing Mode) -->
+
 <template>
   <div>
     <p class="h-1">Create Daycare</p>
@@ -34,7 +37,6 @@
                   <select
                     :id="`${subField.id}-${itemIndex}`"
                     v-model="item[subField.model]"
-                    class="form-control"
                     :required="subField.required"
                   >
                     <option
@@ -52,7 +54,6 @@
                     type="time"
                     :id="`${subField.id}-${itemIndex}`"
                     v-model="item[subField.model]"
-                    class="form-control"
                     :required="subField.required"
                   />
                 </template>
@@ -62,7 +63,6 @@
                     type="checkbox"
                     :id="`${subField.id}-${itemIndex}`"
                     v-model="item[subField.model]"
-                    class="form-control"
                     :required="subField.required"
                   />
                 </template>
@@ -76,7 +76,6 @@
               <select
                 :id="field.id"
                 v-model="form[field.model]"
-                class="form-control"
                 :required="field.required"
               >
                 <option
@@ -94,7 +93,6 @@
                 type="time"
                 :id="field.id"
                 v-model="form[field.model]"
-                class="form-control"
                 :required="field.required"
               />
             </template>
@@ -104,7 +102,6 @@
                 type="checkbox"
                 :id="field.id"
                 v-model="form[field.model]"
-                class="form-control"
                 :required="field.required"
               />
             </template>
@@ -115,7 +112,6 @@
                 :id="field.id"
                 v-model="form[field.model]"
                 :placeholder="field.placeholder ? field.placeholder : ''"
-                class="form-control"
                 :required="field.required"
               />
             </template>
