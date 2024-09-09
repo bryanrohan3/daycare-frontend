@@ -111,6 +111,7 @@ const createDaycareFields = [
     model: "phone",
     required: true,
   },
+
   {
     id: "email",
     label: "Email",
@@ -132,6 +133,7 @@ const createDaycareFields = [
     model: "capacity",
     required: true,
   },
+
   {
     id: "opening_hours",
     label: "Opening Hours",

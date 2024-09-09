@@ -3,128 +3,49 @@
     <div class="c-1 mt-30 mb-30">
       <h2 class="h-1 h-center">Welcome to DayCare</h2>
       <p class="p-text-1">Sign up as a new customer</p>
-      <form @submit.prevent="createDaycare">
-        <p class="h-2">Basic Daycare Details</p>
-
-        <div class="form-row mb-10">
-          <div class="form-group">
-            <label for="daycare_name">Daycare Name</label>
+      <form @submit.prevent="handleSignUp">
+        <div v-for="(field, index) in formFields" :key="index">
+          <!-- Render the form group based on the field configuration -->
+          <div :class="['form-group', field.row ? 'mb-10' : '']">
+            <label class="mt-10" :for="field.id">{{ field.label }}</label>
             <input
-              v-model="daycare.name"
-              type="text"
-              id="daycare_name"
-              required
+              v-model="newUser[field.model]"
+              :type="field.type"
+              :id="field.id"
+              :required="field.required"
             />
           </div>
         </div>
 
-        <div class="form-row mb-10">
+        <div class="form-row mb-10" v-if="showPasswordFields">
+          <!-- Password and Confirm Password Side by Side -->
           <div class="form-group">
-            <label for="street_address">Street Address</label>
+            <label for="password">Password</label>
             <input
-              v-model="daycare.streetAddress"
-              type="text"
-              id="street_address"
+              v-model="newUser.password"
+              type="password"
+              id="password"
               required
             />
           </div>
           <div class="form-group">
-            <label for="suburb">Suburb</label>
-            <input v-model="daycare.suburb" type="text" id="suburb" required />
-          </div>
-        </div>
-
-        <div class="form-row mb-10">
-          <div class="form-group">
-            <label for="postcode">Postcode</label>
+            <label for="confirmPassword">Confirm Password</label>
             <input
-              v-model="daycare.postcode"
-              type="text"
-              id="postcode"
+              v-model="newUser.confirmPassword"
+              type="password"
+              id="confirmPassword"
               required
-            />
-          </div>
-          <div class="form-group">
-            <label for="state">State</label>
-            <input v-model="daycare.state" type="text" id="state" required />
-          </div>
-        </div>
-
-        <div class="form-row mb-10">
-          <div class="form-group">
-            <label for="phone">Phone</label>
-            <input v-model="daycare.phone" type="text" id="phone" required />
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input v-model="daycare.email" type="email" id="email" required />
-          </div>
-        </div>
-
-        <p class="h-2">Pet Details</p>
-
-        <div class="form-row mb-10">
-          <div class="form-group">
-            <label for="capacity">Capacity</label>
-            <input
-              v-model="daycare.capacity"
-              type="number"
-              id="capacity"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="pet_types">Pet Types</label>
-            <input
-              v-model="daycare.petTypes"
-              type="text"
-              id="pet_types"
-              required
-            />
-          </div>
-        </div>
-
-        <p class="h-2">Opening Hours Details</p>
-
-        <div
-          v-for="(day, index) in openingHours"
-          :key="index"
-          class="form-row mb-10"
-        >
-          <div class="form-group">
-            <label :for="'day_' + index">{{ day.name }}</label>
-            <input
-              v-model="day.fromHour"
-              type="time"
-              :id="'from_' + index"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label :for="'to_' + index">To</label>
-            <input
-              v-model="day.toHour"
-              type="time"
-              :id="'to_' + index"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label :for="'closed_' + index">Closed</label>
-            <input
-              v-model="day.closed"
-              type="checkbox"
-              :id="'closed_' + index"
             />
           </div>
         </div>
 
         <!-- Submit Button -->
         <div class="form-group">
-          <button class="button button--tertiary" type="submit">
-            Create Daycare
-          </button>
+          <button class="button button--tertiary" type="submit">Sign Up</button>
         </div>
+        <p class="p-text-1">
+          Already have an account? <router-link to="/login">Login</router-link>
+        </p>
       </form>
     </div>
   </div>
