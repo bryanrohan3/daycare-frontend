@@ -1,6 +1,6 @@
 <template>
   <div class="centre">
-    <div class="c-1">
+    <div class="c-1 c-1-small">
       <h2 class="h-1 h-center">Welcome to DayCare</h2>
       <form @submit.prevent="handleLogin">
         <div

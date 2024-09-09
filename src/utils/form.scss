@@ -10,6 +10,7 @@
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #444;
+  font-size: 12px;
 }
 
 .form-group input {
@@ -36,4 +37,14 @@
 .form-row .form-group {
   flex: 1; /* Grow equally */
   max-width: 100%; /* Ensure it doesn’t exceed the container width */
+}
+
+.form-group select {
+  width: 100%; /* Full width of the form group */
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
 }

@@ -4,6 +4,9 @@ import LoginPage from "@/views/LoginPage/LoginPage.vue";
 import CustomerHomePage from "@/views/CustomerHomePage/CustomerHomePage.vue";
 import StaffDashboardPage from "@/views/StaffDashboardPage/StaffDashboardPage.vue";
 import CustomerSignUpPage from "@/views/CustomerSignUpPage/CustomerSignUpPage.vue";
+import CreateDaycarePage from "@/views/CreateDaycarePage/CreateDaycarePage.vue";
+// Layouts
+import StaffLayout from "@/components/layouts/StaffLayout.vue";
 
 const routes = [
   {
@@ -20,12 +23,18 @@ const routes = [
 
   {
     path: "/staff",
+    component: StaffLayout,
     meta: { requiresAuth: true, account_type: "staff" },
     children: [
       {
         path: "dashboard",
         name: "StaffDashboardPage",
         component: StaffDashboardPage,
+      },
+      {
+        path: "create-daycare",
+        name: "CreateDaycarePage",
+        component: CreateDaycarePage,
       },
     ],
   },
