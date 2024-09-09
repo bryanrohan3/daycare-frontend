@@ -58,7 +58,7 @@ export const loginFormFields = [
   },
 ];
 
-const createDaycareFields = [
+export const createDaycareFields = [
   {
     id: "daycare_name",
     label: "Daycare Name",
@@ -111,7 +111,6 @@ const createDaycareFields = [
     model: "phone",
     required: true,
   },
-
   {
     id: "email",
     label: "Email",
@@ -120,20 +119,19 @@ const createDaycareFields = [
     required: true,
   },
   {
-    id: "is_active",
-    label: "Active",
-    type: "checkbox",
-    model: "is_active",
-    required: false,
-  },
-  {
     id: "capacity",
     label: "Capacity",
     type: "number",
     model: "capacity",
     required: true,
   },
-
+  {
+    id: "pet_types",
+    label: "Pet Types",
+    type: "text",
+    model: "pet_types",
+    required: false,
+  },
   {
     id: "opening_hours",
     label: "Opening Hours",
