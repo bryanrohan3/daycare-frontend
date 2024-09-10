@@ -1,9 +1,26 @@
-<!-- We can reuse this file for "Edit Daycare" -->
-<!-- Also reuse this file for seeing Daycare Information (Viewing Mode) -->
-
 <template>
   <div>
-    <p class="h-1">Create Daycare</p>
+    <div class="flex-row-space">
+      <p class="h-1">{{ isEditMode ? "Edit Daycare" : "Create Daycare" }}</p>
+      <!-- Dropdown for selecting a daycare to edit -->
+      <div v-if="isEditMode" class="form-group">
+        <label for="daycare-select">Select Daycare:</label>
+        <select
+          id="daycare-select"
+          class="dropdown-edit-mode"
+          v-model="selectedDaycareId"
+          @change="fetchDaycareData"
+        >
+          <option
+            v-for="daycare in userDaycares"
+            :key="daycare.id"
+            :value="daycare.id"
+          >
+            {{ daycare.daycare_name }}
+          </option>
+        </select>
+      </div>
+    </div>
 
     <form @submit.prevent="submitForm">
       <!-- Render All Fields Including Opening Hours -->
@@ -29,16 +46,15 @@
                 :key="subField.id"
                 class="form-group"
               >
-                <label :for="`${subField.id}-${itemIndex}`">
-                  {{ subField.label }}
-                </label>
+                <label :for="`${subField.id}-${itemIndex}`">{{
+                  subField.label
+                }}</label>
 
                 <template v-if="subField.type === 'select'">
                   <select
                     :id="`${subField.id}-${itemIndex}`"
                     v-model="item[subField.model]"
                     :required="subField.required"
-                    disabled
                   >
                     <option
                       v-for="option in subField.options"
@@ -72,7 +88,6 @@
           </template>
 
           <template v-else>
-            <!-- Render Other Fields (e.g., text, number, email) -->
             <template v-if="field.type === 'select'">
               <select
                 :id="field.id"
@@ -121,7 +136,9 @@
       </div>
 
       <!-- Submit Button -->
-      <button type="submit" class="button button--tertiary">Submit</button>
+      <button type="submit" class="button button--tertiary">
+        {{ isEditMode ? "Save" : "Submit" }}
+      </button>
     </form>
   </div>
 </template>
@@ -129,6 +146,7 @@
 <script>
 import { createDaycareFields } from "@/config/formFieldConfig";
 import { fetchCurrentStaffProfile } from "@/helpers/fetchCurrentStaffProfile";
+import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 
 export default {
   name: "CreateDaycarePage",
@@ -137,13 +155,27 @@ export default {
       createDaycareFields: createDaycareFields,
       form: this.initializeForm(createDaycareFields),
       currentUser: null,
+      userDaycares: [], // Must be reactive
+      selectedDaycareId: null,
+      isEditMode: false,
     };
   },
   async created() {
     try {
       this.currentUser = await fetchCurrentStaffProfile();
+      this.userDaycares = await this.fetchUserDaycares();
+      if (this.userDaycares.length > 0) {
+        this.selectedDaycareId = this.userDaycares[0].id; // Set the first daycare as default
+        this.isEditMode = this.$route.name === "EditDaycarePage";
+        if (this.isEditMode) {
+          await this.fetchDaycareData(); // Fetch data for the default or selected daycare
+        }
+      }
     } catch (error) {
-      console.error("Error initializing staff profile:", error);
+      console.error(
+        "Error initializing staff profile or fetching daycares:",
+        error
+      );
     }
   },
   methods: {
@@ -156,7 +188,7 @@ export default {
             field.fields.find((f) => f.type === "select")?.options || [];
 
           form[field.model] = dayOptions.map((option) => ({
-            day: option.value, // Default value for 'day'
+            day: option.value,
             from_hour: "",
             to_hour: "",
             closed: false,
@@ -175,14 +207,49 @@ export default {
         to_hour: item.to_hour === "" ? null : item.to_hour,
       }));
     },
+    async fetchUserDaycares() {
+      try {
+        const response = await axiosInstance.get(endpoints.currentStaffProfile);
+        return response.data.daycares_names; // Ensure this line matches your API response structure
+      } catch (error) {
+        console.error("Error fetching user daycares:", error);
+        return [];
+      }
+    },
+    async fetchDaycareData() {
+      if (!this.selectedDaycareId) return;
+
+      try {
+        const response = await axiosInstance.get(
+          `daycare/${this.selectedDaycareId}/`
+        );
+        const daycareData = response.data;
+        this.populateForm(daycareData);
+      } catch (error) {
+        console.error("Error fetching daycare data:", error);
+      }
+    },
+    populateForm(daycareData) {
+      this.form.daycare_name = daycareData.daycare_name;
+      this.form.street_address = daycareData.street_address;
+      this.form.suburb = daycareData.suburb;
+      this.form.state = daycareData.state;
+      this.form.postcode = daycareData.postcode;
+      this.form.phone = daycareData.phone;
+      this.form.email = daycareData.email;
+      this.form.capacity = daycareData.capacity;
+      this.form.opening_hours = daycareData.opening_hours.map((item) => ({
+        day: item.day,
+        from_hour: item.from_hour || "",
+        to_hour: item.to_hour || "",
+        closed: item.closed,
+      }));
+    },
     async submitForm() {
       try {
-        // Convert empty time fields to null
         const updatedOpeningHours = this.convertEmptyToNull(
           this.form.opening_hours
         );
-
-        // Format the time fields correctly
         const formattedOpeningHours = updatedOpeningHours.map((item) => ({
           ...item,
           from_hour: this.formatTime(item.from_hour),
@@ -195,37 +262,32 @@ export default {
           createdBy: this.currentUser.id,
         };
 
-        console.log("Daycare data being submitted:", formData);
-
-        const response = await axiosInstance.post(
-          endpoints.createDaycare,
-          formData
-        );
-
-        console.log("Daycare created successfully. Response:", response.data);
-
-        alert("Daycare created successfully!");
-      } catch (error) {
-        console.error("Error creating daycare:", error);
-
-        if (error.response) {
-          console.error("Error response status:", error.response.status);
-          console.error("Error response headers:", error.response.headers);
-          console.error("Error response data:", error.response.data);
-
-          const errorMessage =
-            error.response.data.detail ||
-            "Failed to create daycare. Please try again.";
-          alert(errorMessage);
+        let response;
+        if (this.isEditMode && this.selectedDaycareId) {
+          // Update existing daycare
+          response = await axiosInstance.put(
+            `daycare/${this.selectedDaycareId}/`,
+            formData
+          );
         } else {
-          console.error("Error message:", error.message);
-          alert("An unexpected error occurred. Please try again.");
+          // Create new daycare
+          response = await axiosInstance.post(
+            endpoints.createDaycare,
+            formData
+          );
         }
+
+        console.log(
+          this.isEditMode
+            ? "Daycare updated successfully."
+            : "Daycare created successfully."
+        );
+      } catch (error) {
+        console.error("Error submitting form:", error);
       }
     },
     formatTime(time) {
-      // Optionally handle formatting of time here if needed
-      return time;
+      return time ? new Date(`1970-01-01T${time}:00`).toISOString() : null;
     },
   },
 };

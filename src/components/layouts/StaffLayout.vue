@@ -29,6 +29,9 @@ export default {
 
 .main-content {
   width: 80%; /* Takes up 75% of the screen width */
+  height: 100vh; /* Full viewport height */
+  overflow: scroll;
+  overflow-x: hidden;
   padding: 2rem; /* Padding inside the main content area */
   box-sizing: border-box; /* Include padding in width calculation */
   background-color: #f5f5f5; /* Background color for the main content */

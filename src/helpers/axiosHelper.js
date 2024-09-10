@@ -35,6 +35,8 @@ const endpoints = {
   customerSignUp: apiConstants.api_hostname + "customer-profile/",
   createDaycare: apiConstants.api_hostname + "daycare/",
   currentStaffProfile: apiConstants.api_hostname + "staff-profile/current/",
+  editDaycare: (daycareId) => `daycare/${daycareId}/`, // PUT request to update daycare by ID
+  getDaycareById: (daycareId) => `daycare/${daycareId}/`,
 };
 
 export { axiosInstance, endpoints };

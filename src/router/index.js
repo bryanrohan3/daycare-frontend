@@ -36,6 +36,11 @@ const routes = [
         name: "CreateDaycarePage",
         component: CreateDaycarePage,
       },
+      {
+        path: "edit-daycare",
+        name: "EditDaycarePage",
+        component: CreateDaycarePage,
+      },
     ],
   },
   {

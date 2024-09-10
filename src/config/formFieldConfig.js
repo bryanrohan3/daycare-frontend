@@ -120,6 +120,7 @@ export const createDaycareFields = [
     model: "email",
     required: true,
   },
+
   {
     id: "capacity",
     label: "Capacity",
