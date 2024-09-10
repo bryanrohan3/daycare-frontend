@@ -189,6 +189,7 @@ export default {
 
           form[field.model] = dayOptions.map((option) => ({
             day: option.value,
+            day_name: option.text,
             from_hour: "",
             to_hour: "",
             closed: false,
@@ -199,13 +200,6 @@ export default {
       });
 
       return form;
-    },
-    convertEmptyToNull(openingHours) {
-      return openingHours.map((item) => ({
-        ...item,
-        from_hour: item.from_hour === "" ? null : item.from_hour,
-        to_hour: item.to_hour === "" ? null : item.to_hour,
-      }));
     },
     async fetchUserDaycares() {
       try {
@@ -240,6 +234,7 @@ export default {
       this.form.capacity = daycareData.capacity;
       this.form.opening_hours = daycareData.opening_hours.map((item) => ({
         day: item.day,
+        day_name: item.day_name,
         from_hour: item.from_hour || "",
         to_hour: item.to_hour || "",
         closed: item.closed,
@@ -247,10 +242,7 @@ export default {
     },
     async submitForm() {
       try {
-        const updatedOpeningHours = this.convertEmptyToNull(
-          this.form.opening_hours
-        );
-        const formattedOpeningHours = updatedOpeningHours.map((item) => ({
+        const formattedOpeningHours = this.form.opening_hours.map((item) => ({
           ...item,
           from_hour: this.formatTime(item.from_hour),
           to_hour: this.formatTime(item.to_hour),
@@ -287,7 +279,7 @@ export default {
       }
     },
     formatTime(time) {
-      return time ? new Date(`1970-01-01T${time}:00`).toISOString() : null;
+      return time ? time : "00:00:00";
     },
   },
 };
