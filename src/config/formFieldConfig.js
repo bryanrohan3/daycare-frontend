@@ -175,3 +175,73 @@ export const createDaycareFields = [
     ],
   },
 ];
+
+// Form fields for creating a new employee
+export const ownerCreateEmployeeFields = [
+  {
+    id: "username",
+    label: "Username",
+    type: "text",
+    model: "user.username",
+    required: true,
+  },
+  {
+    id: "password",
+    label: "Password",
+    type: "password",
+    model: "user.password",
+    required: true,
+  },
+  {
+    id: "email",
+    label: "Email",
+    type: "email",
+    model: "user.email",
+    required: true,
+  },
+  {
+    id: "firstName",
+    label: "First Name",
+    type: "text",
+    model: "user.first_name",
+    required: true,
+  },
+  {
+    id: "lastName",
+    label: "Last Name",
+    type: "text",
+    model: "user.last_name",
+    required: true,
+  },
+  {
+    id: "phone",
+    label: "Phone",
+    type: "tel",
+    model: "phone",
+    required: true,
+  },
+  {
+    id: "role",
+    label: "Role",
+    type: "select",
+    model: "role",
+    options: [
+      { value: "E", text: "Employee" },
+      // Add other roles if applicable
+    ],
+    required: true,
+  },
+  {
+    id: "daycare",
+    label: "Daycare",
+    type: "select",
+    model: "daycare",
+    multiple: true,
+    options: [
+      // Populate this with daycare options from your backend or other data source
+      { value: 1, text: "Daycare 1" },
+      { value: 2, text: "Daycare 2" },
+    ],
+    required: true,
+  },
+];

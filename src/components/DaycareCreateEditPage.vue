@@ -1,5 +1,6 @@
 <template>
   <div class="mt-20">
+    <h1 class="h-1">{{ isEditMode ? "" : "Create Daycare" }}</h1>
     <form @submit.prevent="submitForm">
       <!-- Render All Fields Including Opening Hours -->
       <div

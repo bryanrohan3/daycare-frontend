@@ -6,6 +6,7 @@ import StaffDashboardPage from "@/views/StaffDashboardPage/StaffDashboardPage.vu
 import CustomerSignUpPage from "@/views/CustomerSignUpPage/CustomerSignUpPage.vue";
 import CreateDaycarePage from "@/views/CreateDaycarePage/CreateDaycarePage.vue";
 import DaycareDetailPage from "@/views/DaycareDetailPage.vue/DaycareDetailPage.vue";
+import DaycareCreateEditPage from "@/components/DaycareCreateEditPage.vue";
 // Layouts
 import StaffLayout from "@/components/layouts/StaffLayout.vue";
 
@@ -35,7 +36,7 @@ const routes = [
       {
         path: "create-daycare",
         name: "CreateDaycarePage",
-        component: CreateDaycarePage,
+        component: DaycareCreateEditPage,
       },
       {
         path: "edit-daycare",

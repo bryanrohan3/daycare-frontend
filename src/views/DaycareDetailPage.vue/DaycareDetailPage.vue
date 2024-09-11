@@ -8,7 +8,6 @@
           id="daycare-select"
           class="dropdown-edit-mode"
           v-model="selectedDaycareId"
-          @change="handleDaycareChange"
         >
           <option
             v-for="daycare in userDaycares"
@@ -54,10 +53,10 @@
         />
       </div>
       <div v-if="activeTab === 'products'">
-        <p>Products Content Goes Here</p>
+        <p class="h-small mt-30 h-center">Products Content Goes Here</p>
       </div>
       <div v-if="activeTab === 'employees'">
-        <p>Employees Content Goes Here</p>
+        <DaycareEmployees :selectedDaycareId="selectedDaycareId" />
       </div>
     </div>
   </div>
@@ -66,11 +65,13 @@
 <script>
 import DaycareCreateEditPage from "@/components/DaycareCreateEditPage.vue";
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import DaycareEmployees from "@/components/DaycareEmployees.vue";
 
 export default {
   name: "DaycareDetailPage",
   components: {
     DaycareCreateEditPage,
+    DaycareEmployees,
   },
   data() {
     return {
