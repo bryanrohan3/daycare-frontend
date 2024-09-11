@@ -53,7 +53,7 @@
         />
       </div>
       <div v-if="activeTab === 'products'">
-        <p class="h-small mt-30 h-center">Products Content Goes Here</p>
+        <DaycareProducts :selectedDaycareId="selectedDaycareId" />
       </div>
       <div v-if="activeTab === 'employees'">
         <DaycareEmployees :selectedDaycareId="selectedDaycareId" />
@@ -66,12 +66,14 @@
 import DaycareCreateEditPage from "@/components/DaycareCreateEditPage.vue";
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import DaycareEmployees from "@/components/DaycareEmployees.vue";
+import DaycareProducts from "@/components/DaycareProducts.vue";
 
 export default {
   name: "DaycareDetailPage",
   components: {
     DaycareCreateEditPage,
     DaycareEmployees,
+    DaycareProducts,
   },
   data() {
     return {
