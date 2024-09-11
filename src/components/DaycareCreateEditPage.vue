@@ -210,6 +210,11 @@ export default {
         console.error("Error fetching daycare data:", error);
       }
     },
+    handleClosedChange(index) {
+      // When the closed checkbox is checked, clear the time fields
+      this.form.opening_hours[index].from_hour = "";
+      this.form.opening_hours[index].to_hour = "";
+    },
     populateForm(daycareData) {
       this.form.daycare_name = daycareData.daycare_name;
       this.form.street_address = daycareData.street_address;
@@ -229,11 +234,27 @@ export default {
     },
     async submitForm() {
       try {
-        const formattedOpeningHours = this.form.opening_hours.map((item) => ({
-          ...item,
-          from_hour: this.formatTime(item.from_hour),
-          to_hour: this.formatTime(item.to_hour),
-        }));
+        // Format opening hours and check for closed status
+        const formattedOpeningHours = this.form.opening_hours.map((item) => {
+          // Check if both hours are "00:00:00"
+          if (
+            this.formatTime(item.from_hour) === "00:00:00" &&
+            this.formatTime(item.to_hour) === "00:00:00"
+          ) {
+            return {
+              ...item,
+              from_hour: null,
+              to_hour: null,
+              closed: true,
+            };
+          }
+          return {
+            ...item,
+            from_hour: this.formatTime(item.from_hour),
+            to_hour: this.formatTime(item.to_hour),
+            closed: false,
+          };
+        });
 
         const formData = {
           ...this.form,
