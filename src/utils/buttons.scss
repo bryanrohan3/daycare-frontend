@@ -72,3 +72,9 @@
 .button-group {
   display: flex;
 }
+
+.button--top-right {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+}
