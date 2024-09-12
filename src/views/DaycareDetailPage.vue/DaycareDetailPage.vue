@@ -79,8 +79,6 @@
       </div>
 
       <div v-if="activeTab === 'add-employees'">
-        <!-- <p>Add Employee</p>
-          -->
         <CreateEmployee :selectedDaycareId="selectedDaycareId" />
       </div>
     </div>
@@ -118,13 +116,25 @@ export default {
   },
   async created() {
     try {
-      this.userDaycares = await this.fetchUserDaycares();
+      const daycares = await this.fetchUserDaycares();
+      this.userDaycares = daycares;
+
+      // Set selectedDaycareId to the first daycare's ID if available
       if (this.userDaycares.length > 0) {
         this.selectedDaycareId = this.userDaycares[0].id;
+      } else {
+        this.selectedDaycareId = 0; // Fallback to a valid default value
       }
     } catch (error) {
       console.error("Error fetching user daycares:", error);
     }
+  },
+  watch: {
+    userDaycares(newVal) {
+      if (newVal.length > 0 && this.selectedDaycareId === null) {
+        this.selectedDaycareId = newVal[0].id; // Set a valid daycare ID
+      }
+    },
   },
   methods: {
     async fetchUserDaycares() {

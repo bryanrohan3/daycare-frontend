@@ -41,6 +41,7 @@ const endpoints = {
   // getProductById: (productId) => `products/${productId}/`, // GET request for a single product
   updateProduct: (productId) => `product/${productId}/`, // PUT request to update a product
   product: apiConstants.api_hostname + "product/",
+  addEmployee: apiConstants.api_hostname + "staff-profile/",
 };
 
 export { axiosInstance, endpoints };

@@ -35,17 +35,15 @@
       </button>
     </form>
 
-    <!-- Success message alert -->
-    <div v-if="successMessage" class="success">{{ successMessage }}</div>
+    <div v-if="successMessage" class="success mt-10">{{ successMessage }}</div>
 
-    <!-- Error message alert -->
-    <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+    <div v-if="errorMessage" class="error mt-10">{{ errorMessage }}</div>
   </div>
 </template>
 
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
-import { ownerCreateEmployeeFields } from "@/config/formFieldConfig"; // Import form fields
+import { ownerCreateEmployeeFields } from "@/config/formFieldConfig";
 
 export default {
   name: "CreateEmployee",
@@ -59,36 +57,46 @@ export default {
     return {
       ownerCreateEmployeeFields,
       employeeForm: {
-        user: {
-          username: "",
-          password: "",
-          email: "",
-          first_name: "",
-          last_name: "",
-        },
+        username: "",
+        password: "",
+        email: "",
+        first_name: "",
+        last_name: "",
         phone: "",
         role: "E",
         daycare: [], // This will be set using the selectedDaycareId prop
       },
-      successMessage: null, // Add success message state
+      successMessage: null,
       errorMessage: null,
     };
   },
   methods: {
     async submitEmployee() {
       try {
-        // Set the daycare ID from the prop
-        this.employeeForm.daycare = [this.selectedDaycareId];
+        this.employeeForm.daycares = [this.selectedDaycareId]; // Change this line
+
+        const formattedData = {
+          user: {
+            username: this.employeeForm.username,
+            password: this.employeeForm.password,
+            email: this.employeeForm.email,
+            first_name: this.employeeForm.first_name,
+            last_name: this.employeeForm.last_name,
+          },
+          phone: this.employeeForm.phone,
+          role: this.employeeForm.role,
+          daycares: this.employeeForm.daycares, // Change this line
+        };
 
         const response = await axiosInstance.post(
-          endpoints.staffProfile,
-          this.employeeForm
+          endpoints.addEmployee,
+          formattedData
         );
         console.log("Employee created successfully:", response.data);
 
         // Set the success message
         this.successMessage = "Employee created successfully!";
-        this.errorMessage = null; // Clear any previous error message
+        this.errorMessage = null;
 
         // Optionally reset form or show success message
         this.resetForm();
@@ -96,22 +104,20 @@ export default {
         // Clear success message after a delay
         setTimeout(() => {
           this.successMessage = null;
-        }, 3000); // Clear after 3 seconds
+        }, 3000);
       } catch (error) {
         this.errorMessage = "Failed to create employee. Please try again.";
-        console.error("Error creating employee:", error);
-        this.successMessage = null; // Clear any previous success message
+        console.error("Error creating employee:", error.response.data);
+        this.successMessage = null;
       }
     },
     resetForm() {
       this.employeeForm = {
-        user: {
-          username: "",
-          password: "",
-          email: "",
-          first_name: "",
-          last_name: "",
-        },
+        username: "",
+        password: "",
+        email: "",
+        first_name: "",
+        last_name: "",
         phone: "",
         role: "E",
         daycare: [this.selectedDaycareId],
