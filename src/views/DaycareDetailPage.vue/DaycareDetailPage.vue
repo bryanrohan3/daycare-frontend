@@ -79,7 +79,9 @@
       </div>
 
       <div v-if="activeTab === 'add-employees'">
-        <p>Add Employee</p>
+        <!-- <p>Add Employee</p>
+          -->
+        <CreateEmployee :selectedDaycareId="selectedDaycareId" />
       </div>
     </div>
   </div>
@@ -91,6 +93,7 @@ import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import DaycareEmployees from "@/components/DaycareEmployees.vue";
 import DaycareProducts from "@/components/DaycareProducts.vue";
 import AddProduct from "@/components/AddProduct.vue";
+import CreateEmployee from "@/components/CreateEmployee.vue";
 
 export default {
   name: "DaycareDetailPage",
@@ -99,6 +102,7 @@ export default {
     DaycareEmployees,
     DaycareProducts,
     AddProduct,
+    CreateEmployee,
   },
   data() {
     return {

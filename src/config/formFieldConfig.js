@@ -240,24 +240,25 @@ export const ownerCreateEmployeeFields = [
     type: "select",
     model: "role",
     options: [
+      { value: "O", text: "Owner" },
       { value: "E", text: "Employee" },
       // Add other roles if applicable
     ],
     required: true,
   },
-  {
-    id: "daycare",
-    label: "Daycare",
-    type: "select",
-    model: "daycare",
-    multiple: true,
-    options: [
-      // Populate this with daycare options from your backend or other data source
-      { value: 1, text: "Daycare 1" },
-      { value: 2, text: "Daycare 2" },
-    ],
-    required: true,
-  },
+  // {
+  //   id: "daycare",
+  //   label: "Daycare",
+  //   type: "select",
+  //   model: "daycare",
+  //   multiple: true,
+  //   options: [
+  //     // Populate this with daycare options from your backend or other data source
+  //     { value: 1, text: "Daycare 1" },
+  //     { value: 2, text: "Daycare 2" },
+  //   ],
+  //   required: true,
+  // },
 ];
 
 export const addProductFields = [
