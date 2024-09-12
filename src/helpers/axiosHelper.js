@@ -40,6 +40,7 @@ const endpoints = {
   daycare: apiConstants.api_hostname + "daycare",
   // getProductById: (productId) => `products/${productId}/`, // GET request for a single product
   updateProduct: (productId) => `product/${productId}/`, // PUT request to update a product
+  product: apiConstants.api_hostname + "product/",
 };
 
 export { axiosInstance, endpoints };

@@ -128,6 +128,20 @@ export const createDaycareFields = [
     model: "capacity",
     required: true,
   },
+  // {
+  //   id: "pet_types",
+  //   label: "Pet Types",
+  //   type: "select",
+  //   model: "pet_types",
+  //   options: [
+  //     { value: 1, text: "Dog" },
+  //     { value: 2, text: "Cat" },
+  //     { value: 3, text: "Bird" },
+  //     { value: 4, text: "Fish" },
+  //     { value: 5, text: "Lizard" },
+  //   ],
+  //   required: false,
+  // },
   {
     id: "opening_hours",
     label: "Opening Hours",
@@ -242,6 +256,37 @@ export const ownerCreateEmployeeFields = [
       { value: 1, text: "Daycare 1" },
       { value: 2, text: "Daycare 2" },
     ],
+    required: true,
+  },
+];
+
+export const addProductFields = [
+  {
+    id: "name",
+    label: "Product Name",
+    type: "text",
+    model: "name",
+    required: true,
+  },
+  {
+    id: "description",
+    label: "Description",
+    type: "text",
+    model: "description",
+    required: true,
+  },
+  {
+    id: "price",
+    label: "Price",
+    type: "number",
+    model: "price",
+    required: true,
+  },
+  {
+    id: "capacity",
+    label: "Capacity",
+    type: "number",
+    model: "capacity",
     required: true,
   },
 ];

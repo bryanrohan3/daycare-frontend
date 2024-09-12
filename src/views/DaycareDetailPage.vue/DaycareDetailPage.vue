@@ -43,6 +43,20 @@
         >
           Employees
         </button>
+        <button
+          class="tab-button"
+          :class="{ active: activeTab === 'add-product' }"
+          @click="activeTab = 'add-product'"
+        >
+          Add Product
+        </button>
+        <button
+          class="tab-button"
+          :class="{ active: activeTab === 'add-employees' }"
+          @click="activeTab = 'add-employees'"
+        >
+          Add Employee
+        </button>
       </div>
 
       <div v-if="activeTab === 'daycare-details'">
@@ -58,6 +72,15 @@
       <div v-if="activeTab === 'employees'">
         <DaycareEmployees :selectedDaycareId="selectedDaycareId" />
       </div>
+
+      <div v-if="activeTab === 'add-product'">
+        <!-- <p>Add Product</p> -->
+        <AddProduct :daycareId="selectedDaycareId" />
+      </div>
+
+      <div v-if="activeTab === 'add-employees'">
+        <p>Add Employee</p>
+      </div>
     </div>
   </div>
 </template>
@@ -67,6 +90,7 @@ import DaycareCreateEditPage from "@/components/DaycareCreateEditPage.vue";
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import DaycareEmployees from "@/components/DaycareEmployees.vue";
 import DaycareProducts from "@/components/DaycareProducts.vue";
+import AddProduct from "@/components/AddProduct.vue";
 
 export default {
   name: "DaycareDetailPage",
@@ -74,6 +98,7 @@ export default {
     DaycareCreateEditPage,
     DaycareEmployees,
     DaycareProducts,
+    AddProduct,
   },
   data() {
     return {
