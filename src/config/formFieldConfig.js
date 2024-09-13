@@ -120,7 +120,6 @@ export const createDaycareFields = [
     model: "email",
     required: true,
   },
-
   {
     id: "capacity",
     label: "Capacity",
@@ -128,20 +127,20 @@ export const createDaycareFields = [
     model: "capacity",
     required: true,
   },
-  // {
-  //   id: "pet_types",
-  //   label: "Pet Types",
-  //   type: "select",
-  //   model: "pet_types",
-  //   options: [
-  //     { value: 1, text: "Dog" },
-  //     { value: 2, text: "Cat" },
-  //     { value: 3, text: "Bird" },
-  //     { value: 4, text: "Fish" },
-  //     { value: 5, text: "Lizard" },
-  //   ],
-  //   required: false,
-  // },
+  {
+    id: "pet_types",
+    label: "Pet Types",
+    type: "multi-select",
+    model: "pet_types",
+    options: [
+      { value: 1, text: "Dog" },
+      { value: 2, text: "Cat" },
+      { value: 3, text: "Bird" },
+      { value: 4, text: "Fish" },
+      { value: 5, text: "Lizard" },
+    ],
+    required: true,
+  },
   {
     id: "opening_hours",
     label: "Opening Hours",

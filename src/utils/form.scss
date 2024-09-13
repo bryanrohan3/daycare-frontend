@@ -61,3 +61,16 @@
   font-size: 13px; /* Optional: Adjust font size */
   padding: 8px; /* Optional: Adjust padding */
 }
+
+select[multiple] {
+  height: 150px; /* Adjust height as needed */
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.selected-option {
+  background-color: #d1f7c4; /* Light green background for selected options */
+  color: #000; /* Text color for better readability */
+}

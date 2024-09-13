@@ -67,7 +67,31 @@
           </template>
 
           <template v-else>
-            <template v-if="field.type === 'select'">
+            <!-- Render multi-select field correctly -->
+            <template v-if="field.type === 'multi-select'">
+              <select
+                :id="field.id"
+                v-model="form[field.model]"
+                :required="field.required"
+                multiple
+              >
+                <option
+                  v-for="option in field.options"
+                  :key="option.value"
+                  :value="option.value"
+                  :class="{
+                    'selected-option': isSelected(
+                      option.value,
+                      form[field.model]
+                    ),
+                  }"
+                >
+                  {{ option.text }}
+                </option>
+              </select>
+            </template>
+
+            <template v-else-if="field.type === 'select'">
               <select
                 :id="field.id"
                 v-model="form[field.model]"
@@ -171,16 +195,16 @@ export default {
 
       fields.forEach((field) => {
         if (field.type === "array" && field.model === "opening_hours") {
-          const dayOptions =
-            field.fields.find((f) => f.type === "select")?.options || [];
-
-          form[field.model] = dayOptions.map((option) => ({
-            day: option.value,
-            day_name: option.text,
+          // Initialize opening hours for all 7 days
+          form[field.model] = Array.from({ length: 7 }, (_, index) => ({
+            day: index + 1, // Day from 1 to 7
+            day_name: "", // Leave as blank, update from options if needed
             from_hour: "",
             to_hour: "",
             closed: false,
           }));
+        } else if (field.type === "multi-select") {
+          form[field.model] = []; // Initialize as an empty array for multi-select
         } else {
           form[field.model] = "";
         }
@@ -224,19 +248,30 @@ export default {
       this.form.phone = daycareData.phone;
       this.form.email = daycareData.email;
       this.form.capacity = daycareData.capacity;
-      this.form.opening_hours = daycareData.opening_hours.map((item) => ({
-        day: item.day,
-        day_name: item.day_name,
-        from_hour: item.from_hour || "",
-        to_hour: item.to_hour || "",
-        closed: item.closed,
-      }));
+
+      const allDays = Array.from({ length: 7 }, (_, i) => i + 1); // Days from 1 to 7
+      this.form.opening_hours = allDays.map((day) => {
+        const found = daycareData.opening_hours.find(
+          (item) => item.day === day
+        );
+        return {
+          day: day,
+          day_name: found ? found.day_name : "", // Add default day name if needed
+          from_hour: found && !found.closed ? found.from_hour : "",
+          to_hour: found && !found.closed ? found.to_hour : "",
+          closed: found ? found.closed : true,
+        };
+      });
+
+      // Populate pet types
+      this.form.pet_types = daycareData.pet_types;
+    },
+    isSelected(optionValue, selectedValues) {
+      return selectedValues.includes(optionValue);
     },
     async submitForm() {
       try {
-        // Format opening hours and check for closed status
         const formattedOpeningHours = this.form.opening_hours.map((item) => {
-          // Check if both hours are "00:00:00"
           if (
             this.formatTime(item.from_hour) === "00:00:00" &&
             this.formatTime(item.to_hour) === "00:00:00"
@@ -259,18 +294,17 @@ export default {
         const formData = {
           ...this.form,
           opening_hours: formattedOpeningHours,
+          pet_types: this.form.pet_types, // Ensure pet_types are included
           createdBy: this.currentUser.id,
         };
 
         let response;
         if (this.isEditMode && this.selectedDaycareId) {
-          // Update existing daycare
           response = await axiosInstance.put(
             `daycare/${this.selectedDaycareId}/`,
             formData
           );
         } else {
-          // Create new daycare
           response = await axiosInstance.post(
             endpoints.createDaycare,
             formData
