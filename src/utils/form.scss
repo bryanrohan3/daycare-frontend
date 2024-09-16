@@ -74,3 +74,11 @@ select[multiple] {
   background-color: #d1f7c4; /* Light green background for selected options */
   color: #000; /* Text color for better readability */
 }
+
+/* Ensure horizontal-label aligns the label and input properly */
+.horizontal-label {
+  display: flex;
+  align-items: center; /* Center items vertically */
+  gap: 10px; /* Space between label and input */
+  white-space: nowrap; /* Prevent label text from wrapping */
+}
