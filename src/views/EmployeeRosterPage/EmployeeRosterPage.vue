@@ -3,9 +3,12 @@
     <p class="h-1">Employee Roster</p>
     <div class="flex-row-space">
       <DateSelector @apply="fetchRosterData" />
-      <button @click="showModal" class="button button--tertiary mt-5 pad-5">
-        Add Shift
-      </button>
+      <!-- if the user role is Owner they can see , if nto they cant -->
+      <v-if v-if="userRole === 'O'">
+        <button @click="showModal" class="button button--tertiary mt-5 pad-5">
+          Add Shift
+        </button>
+      </v-if>
     </div>
 
     <!-- Week Header with Navigation Buttons -->
