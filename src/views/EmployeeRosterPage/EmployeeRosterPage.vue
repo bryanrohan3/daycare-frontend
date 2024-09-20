@@ -2,8 +2,8 @@
   <div>
     <p class="h-1">Employee Roster</p>
     <div class="flex-row-space">
-      <DateSelector @apply="fetchRosterData" />
-      <!-- if the user role is Owner they can see , if nto they cant -->
+      <DateSelector @apply="updateWeekFromDate" />
+      <!-- if the user role is Owner they can see , if not they cant -->
       <v-if v-if="userRole === 'O'">
         <button @click="showModal" class="button button--tertiary mt-5 pad-5">
           Add Shift
@@ -148,6 +148,16 @@ export default {
       // Adjust the start of the week by adding/subtracting weeks
       const newStartOfWeek = new Date(this.startOfWeek);
       newStartOfWeek.setDate(newStartOfWeek.getDate() + direction * 7);
+      this.startOfWeek = newStartOfWeek;
+      this.fetchRosterData(); // Fetch data for the new week
+    },
+    updateWeekFromDate(date) {
+      // Update the start of the week based on the selected date
+      const selectedDate = new Date(date);
+      const dayOfWeek = selectedDate.getDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      const newStartOfWeek = new Date(selectedDate);
+      newStartOfWeek.setDate(selectedDate.getDate() + mondayOffset);
       this.startOfWeek = newStartOfWeek;
       this.fetchRosterData(); // Fetch data for the new week
     },

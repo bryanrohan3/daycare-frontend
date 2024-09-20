@@ -9,7 +9,7 @@
         </div>
       </div>
 
-      <button @click="" class="button button--tertiary">Apply</button>
+      <button @click="applyDate" class="button button--tertiary">Apply</button>
     </div>
   </div>
 </template>
@@ -32,11 +32,10 @@ export default {
       this.localStartDate = newVal;
     },
   },
-  methods: {},
+  methods: {
+    applyDate() {
+      this.$emit("apply", this.localStartDate);
+    },
+  },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "@/utils/gap.scss";
-@import "@/utils/flex.scss";
-</style>
