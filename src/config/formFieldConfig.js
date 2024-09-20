@@ -276,3 +276,44 @@ export const addProductFields = [
     required: true,
   },
 ];
+
+// config/formFieldConfig.js
+export const shiftFormFields = [
+  {
+    id: "daycare",
+    label: "Daycare",
+    type: "select",
+    model: "daycare",
+    required: true,
+    options: [],
+  },
+  {
+    id: "staff",
+    label: "Staff",
+    type: "select",
+    model: "staff_id",
+    required: true,
+    options: [],
+  },
+  {
+    id: "startShift",
+    label: "Start Shift",
+    type: "datetime-local",
+    model: "start_shift",
+    required: true,
+  },
+  {
+    id: "endShift",
+    label: "End Shift",
+    type: "datetime-local",
+    model: "end_shift",
+    required: true,
+  },
+  {
+    id: "shiftDay",
+    label: "Shift Day",
+    type: "date",
+    model: "shift_day",
+    required: true,
+  },
+];

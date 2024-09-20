@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex-row-space">
+    <div class="flex-row-space gap-10">
       <p class="h-1">Daycare Information Page</p>
       <div class="form-group">
         <label for="daycare-select">Select Daycare:</label>
@@ -152,4 +152,5 @@ export default {
 
 <style scoped>
 @import "@/utils/tabs.scss";
+@import "@/utils/gap.scss";
 </style>

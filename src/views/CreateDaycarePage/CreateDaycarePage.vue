@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex-row-space">
+    <div class="flex-row-space gap-10">
       <p class="h-1">{{ isEditMode ? "Edit Daycare" : "Create Daycare" }}</p>
       <!-- Dropdown for selecting a daycare to edit -->
       <div v-if="isEditMode" class="form-group">

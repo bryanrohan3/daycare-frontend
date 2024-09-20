@@ -4,13 +4,8 @@
     <div class="flex align-center gap-10">
       <div class="form-row">
         <div class="form-group horizontal-label">
-          <label class="mt-10" for="start-date">Start Date</label>
+          <label class="mt-10" for="start-date">Date</label>
           <input type="date" id="start-date" v-model="localStartDate" />
-        </div>
-
-        <div class="form-group horizontal-label">
-          <label class="mt-10" for="end-date">End Date</label>
-          <input type="date" id="end-date" v-model="localEndDate" />
         </div>
       </div>
 
@@ -26,23 +21,15 @@ export default {
       type: String,
       default: null,
     },
-    endDate: {
-      type: String,
-      default: null,
-    },
   },
   data() {
     return {
       localStartDate: this.startDate,
-      localEndDate: this.endDate,
     };
   },
   watch: {
     startDate(newVal) {
       this.localStartDate = newVal;
-    },
-    endDate(newVal) {
-      this.localEndDate = newVal;
     },
   },
   methods: {},
