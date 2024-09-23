@@ -3,7 +3,13 @@
     <p class="h-1">Employee Roster</p>
     <div class="flex-row-space">
       <DateSelector @apply="updateWeekFromDate" />
-      <button @click="showModal" class="button button--tertiary mt-5 pad-5">
+
+      <!-- Conditionally display the Add Shift button -->
+      <button
+        v-if="userRole === 'O'"
+        @click="showModal"
+        class="button button--tertiary mt-5 pad-5"
+      >
         Add Shift
       </button>
     </div>
@@ -26,17 +32,12 @@
     <div class="flex-row-space">
       <div v-for="(date, index) in weekDates" :key="index" class="day-column">
         <div class="shifts-container">
-          <div
-            v-if="
-              groupedShifts[date.fullDate] &&
-              groupedShifts[date.fullDate].length
-            "
-          >
+          <div v-if="groupedShifts[date.fullDate]?.length">
             <div
               v-for="shift in groupedShifts[date.fullDate]"
               :key="shift.id"
               class="shift-card"
-              @click="editShift(shift.id)"
+              @click="userRole === 'O' ? editShift(shift.id) : null"
             >
               <p class="bold">
                 {{ formatShiftTime(shift.start_shift, shift.end_shift) }}
@@ -69,6 +70,7 @@ import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import DateSelector from "@/components/DateSelector.vue";
 import Modal from "@/components/Modal.vue";
 import CreateShift from "@/components/CreateShift.vue";
+import { fetchCurrentStaffProfile } from "@/helpers/fetchCurrentStaffProfile";
 
 export default {
   name: "EmployeeRosterPage",
@@ -83,35 +85,30 @@ export default {
       daycareId: 1,
       startOfWeek: new Date(),
       isModalVisible: false,
-      currentShiftData: null, // To hold the current shift data for editing
-      isEditMode: false, // To determine if it's edit mode
+      currentShiftData: null,
+      isEditMode: false,
+      userRole: null, // Role of the current user
     };
   },
   computed: {
     weekDates() {
-      const weekDates = [];
-      const startDate = new Date(this.startOfWeek);
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i);
-        weekDates.push({
+      return Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(this.startOfWeek);
+        date.setDate(this.startOfWeek.getDate() + i);
+        return {
           day: date.toLocaleDateString("en-US", { weekday: "long" }),
           date: date.toLocaleDateString("en-US", {
             day: "numeric",
             month: "short",
           }),
           fullDate: date.toISOString().split("T")[0],
-        });
-      }
-      return weekDates;
+        };
+      });
     },
     groupedShifts() {
       return this.rosterData.reduce((acc, shift) => {
-        const shiftDate = new Date(shift.shift_day);
-        const day = shiftDate.toISOString().split("T")[0];
-        if (!acc[day]) {
-          acc[day] = [];
-        }
+        const day = new Date(shift.shift_day).toISOString().split("T")[0];
+        acc[day] = acc[day] || [];
         acc[day].push(shift);
         return acc;
       }, {});
@@ -120,8 +117,10 @@ export default {
   methods: {
     async fetchRosterData() {
       try {
-        const weekStart = this.weekDates[0].fullDate;
-        const weekEnd = this.weekDates[6].fullDate;
+        const [weekStart, weekEnd] = [
+          this.weekDates[0].fullDate,
+          this.weekDates[6].fullDate,
+        ];
         const response = await axiosInstance.get(
           `${endpoints.roster}?daycare=${this.daycareId}&start_date=${weekStart}&end_date=${weekEnd}`
         );
@@ -131,12 +130,15 @@ export default {
       }
     },
     showModal() {
-      this.currentShiftData = null;
-      this.isEditMode = false;
+      this.resetShiftData();
       this.isModalVisible = true;
     },
-    editShift(shiftId) {
-      this.fetchShiftData(shiftId);
+    resetShiftData() {
+      this.currentShiftData = null;
+      this.isEditMode = false;
+    },
+    async editShift(shiftId) {
+      await this.fetchShiftData(shiftId);
     },
     async fetchShiftData(shiftId) {
       try {
@@ -150,20 +152,19 @@ export default {
         console.error("Error fetching shift data:", error);
       }
     },
-    submitShift(shiftData) {
+    async submitShift(shiftData) {
       const request = this.isEditMode
         ? axiosInstance.put(`${endpoints.roster}${shiftData.id}/`, shiftData)
         : axiosInstance.post(endpoints.roster, shiftData);
 
-      request
-        .then((response) => {
-          console.log("Shift saved successfully:", response.data);
-          this.fetchRosterData(); // Refresh roster data
-          this.isModalVisible = false; // Hide the modal
-        })
-        .catch((error) => {
-          console.error("Error saving shift:", error);
-        });
+      try {
+        const response = await request;
+        console.log("Shift saved successfully:", response.data);
+        await this.fetchRosterData(); // Refresh roster data
+        this.isModalVisible = false; // Hide the modal
+      } catch (error) {
+        console.error("Error saving shift:", error);
+      }
     },
     changeWeek(direction) {
       const newStartOfWeek = new Date(this.startOfWeek);
@@ -173,23 +174,31 @@ export default {
     },
     updateWeekFromDate(date) {
       const selectedDate = new Date(date);
-      const dayOfWeek = selectedDate.getDay();
-      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      const newStartOfWeek = new Date(selectedDate);
-      newStartOfWeek.setDate(selectedDate.getDate() + mondayOffset);
-      this.startOfWeek = newStartOfWeek;
+      const mondayOffset =
+        selectedDate.getDay() === 0 ? -6 : 1 - selectedDate.getDay();
+      this.startOfWeek = new Date(selectedDate);
+      this.startOfWeek.setDate(selectedDate.getDate() + mondayOffset);
       this.fetchRosterData();
     },
     formatShiftTime(start, end) {
-      const startTime = new Date(start);
-      const endTime = new Date(end);
-      const startTimeFormatted = startTime.toISOString().substring(11, 16);
-      const endTimeFormatted = endTime.toISOString().substring(11, 16);
-      return `${startTimeFormatted} - ${endTimeFormatted}`;
+      return `${this.formatTime(start)} - ${this.formatTime(end)}`;
+    },
+    formatTime(date) {
+      return new Date(date).toISOString().substring(11, 16);
     },
   },
-  mounted() {
-    this.fetchRosterData();
+  async mounted() {
+    try {
+      // Fetch the current staff profile to get the user's role
+      const profile = await fetchCurrentStaffProfile();
+      this.userRole = profile.role;
+      console.log("User role fetched:", this.userRole);
+
+      // Fetch the roster data after retrieving the user's role
+      this.fetchRosterData();
+    } catch (error) {
+      console.error("Failed to fetch user role:", error);
+    }
   },
 };
 </script>
