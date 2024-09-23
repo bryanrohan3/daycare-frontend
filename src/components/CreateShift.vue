@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="h-2">Add Shift</h2>
+    <h2 class="h-2">{{ isEdit ? "Edit Shift" : "Add Shift" }}</h2>
     <form @submit.prevent="submitShift">
       <div v-for="field in formFields" :key="field.id" class="form-group">
         <label class="mt-10" :for="field.id">{{ field.label }}</label>
@@ -26,7 +26,6 @@
             {{ option.text }}
           </option>
         </select>
-        <!-- Add other input types as needed -->
       </div>
       <button type="submit" class="button button--tertiary mt-10">
         Save Shift
@@ -41,22 +40,35 @@ import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 
 export default {
   name: "CreateShift",
+  props: {
+    shiftData: {
+      type: Object,
+      default: () => ({}),
+    },
+    isEdit: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       formFields: shiftFormFields,
       formData: {
         daycare: "",
-        staff_id: "", // Change to 'staff_id' to match backend
+        staff_id: "",
         start_shift: "",
         end_shift: "",
         shift_day: "",
       },
       daycares: [],
-      staffOptions: [], // This should hold staff options for the selected daycare
+      staffOptions: [],
     };
   },
   async created() {
     await this.fetchDaycares();
+    if (this.isEdit) {
+      this.populateFormData();
+    }
   },
   methods: {
     async fetchDaycares() {
@@ -73,48 +85,81 @@ export default {
       }
     },
     async fetchStaff(daycareId) {
-      try {
-        const response = await axiosInstance.get(
-          endpoints.getDaycareById(daycareId)
-        );
-        const staff = response.data.staff;
-        this.staffOptions = staff.map((staff) => ({
-          value: staff.id,
-          text: `${staff.user.first_name} ${staff.user.last_name}`,
-        }));
-        const staffField = this.formFields.find(
-          (field) => field.id === "staff"
-        );
-        staffField.options = this.staffOptions;
-      } catch (error) {
-        console.error("Error fetching staff:", error);
+      if (daycareId) {
+        try {
+          const response = await axiosInstance.get(
+            endpoints.getDaycareById(daycareId)
+          );
+          const staff = response.data.staff;
+          this.staffOptions = staff.map((staff) => ({
+            value: staff.id,
+            text: `${staff.user.first_name} ${staff.user.last_name}`,
+          }));
+          const staffField = this.formFields.find(
+            (field) => field.id === "staff"
+          );
+          staffField.options = this.staffOptions;
+
+          if (this.isEdit) {
+            this.formData.staff_id = this.shiftData.staff.id; // Set the current staff ID
+          }
+        } catch (error) {
+          console.error("Error fetching staff:", error);
+        }
       }
     },
+    formatDateTimeForInput(dateTime) {
+      const date = new Date(dateTime);
+      return date.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:MM'
+    },
+
     handleSelectChange(fieldId) {
       if (fieldId === "daycare") {
-        this.staffOptions = []; // Clear staff options
-        this.formData.staff_id = ""; // Reset staff selection
+        this.staffOptions = [];
+        this.formData.staff_id = "";
         this.fetchStaff(this.formData.daycare);
       }
     },
+    populateFormData() {
+      if (this.shiftData) {
+        this.formData = {
+          daycare: this.shiftData.daycare,
+          staff_id: this.shiftData.staff.id,
+          start_shift: this.formatDateTimeForInput(this.shiftData.start_shift),
+          end_shift: this.formatDateTimeForInput(this.shiftData.end_shift),
+          shift_day: this.shiftData.shift_day,
+        };
+        this.fetchStaff(this.shiftData.daycare);
+      }
+    },
+
     submitShift() {
-      axiosInstance
-        .post(endpoints.roster, this.formData)
+      const request = this.isEdit
+        ? axiosInstance.put(
+            `${endpoints.roster}${this.shiftData.id}/`,
+            this.formData
+          )
+        : axiosInstance.post(endpoints.roster, this.formData);
+
+      request
         .then((response) => {
-          console.log("Shift added successfully:", response.data);
+          console.log("Shift saved successfully:", response.data);
           this.$emit("submit", this.formData);
-          this.formData = {
-            daycare: "",
-            staff_id: "", // Reset to 'staff_id'
-            start_shift: "",
-            end_shift: "",
-            shift_day: "",
-          };
-          this.staffOptions = [];
+          this.resetForm();
         })
         .catch((error) => {
-          console.error("Error adding shift:", error);
+          console.error("Error saving shift:", error);
         });
+    },
+    resetForm() {
+      this.formData = {
+        daycare: "",
+        staff_id: "",
+        start_shift: "",
+        end_shift: "",
+        shift_day: "",
+      };
+      this.staffOptions = [];
     },
   },
 };

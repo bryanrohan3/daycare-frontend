@@ -3,15 +3,11 @@
     <p class="h-1">Employee Roster</p>
     <div class="flex-row-space">
       <DateSelector @apply="updateWeekFromDate" />
-      <!-- if the user role is Owner they can see , if not they cant -->
-      <v-if v-if="userRole === 'O'">
-        <button @click="showModal" class="button button--tertiary mt-5 pad-5">
-          Add Shift
-        </button>
-      </v-if>
+      <button @click="showModal" class="button button--tertiary mt-5 pad-5">
+        Add Shift
+      </button>
     </div>
 
-    <!-- Week Header with Navigation Buttons -->
     <div class="flex-row-space mb-20 mt-20">
       <button @click="changeWeek(-1)" class="button button--tertiary">
         ← Last Week
@@ -34,14 +30,12 @@
               v-for="shift in groupedShifts[date.fullDate]"
               :key="shift.id"
               class="shift-card"
+              @click="editShift(shift.id)"
             >
               <p class="bold">
                 {{ formatShiftTime(shift.start_shift, shift.end_shift) }}
               </p>
-              <p>
-                {{ shift.staff.first_name }}
-                {{ shift.staff.last_name }}
-              </p>
+              <p>{{ shift.staff.first_name }} {{ shift.staff.last_name }}</p>
               <p>{{ shift.staff.role === "E" ? "Employee" : "Owner" }}</p>
             </div>
           </div>
@@ -53,12 +47,16 @@
       <p>No data available</p>
     </div>
 
-    <!-- Modal for adding shift -->
+    <!-- Modal for adding/editing shift -->
     <Modal
       :isVisible="isModalVisible"
       @update:isVisible="isModalVisible = $event"
     >
-      <CreateShift @submit="submitShift" />
+      <CreateShift
+        @submit="submitShift"
+        :shiftData="currentShiftData"
+        :isEdit="isEditMode"
+      />
     </Modal>
   </div>
 </template>
@@ -78,15 +76,16 @@ export default {
   },
   data() {
     return {
-      rosterData: [], // To hold the fetched roster data
-      daycareId: 1, // Replace with dynamic value if needed
-      startOfWeek: new Date(), // Initialize with current week's Monday
-      isModalVisible: false, // Controls the visibility of the modal
+      rosterData: [],
+      daycareId: 1,
+      startOfWeek: new Date(),
+      isModalVisible: false,
+      currentShiftData: null, // To hold the current shift data for editing
+      isEditMode: false, // To determine if it's edit mode
     };
   },
   computed: {
     weekDates() {
-      // Calculate week dates (Monday to Sunday)
       const weekDates = [];
       const startDate = new Date(this.startOfWeek);
       for (let i = 0; i < 7; i++) {
@@ -98,19 +97,12 @@ export default {
             day: "numeric",
             month: "short",
           }),
-          fullDate: date.toISOString().split("T")[0], // For API requests
+          fullDate: date.toISOString().split("T")[0],
         });
       }
       return weekDates;
     },
-    formattedWeek() {
-      // Format the week header (e.g., "Mon, Sep 16 - Sun, Sep 22")
-      const start = this.weekDates[0];
-      const end = this.weekDates[6];
-      return `${start.day}, ${start.date} - ${end.day}, ${end.date}`;
-    },
     groupedShifts() {
-      // Group shifts by day
       return this.rosterData.reduce((acc, shift) => {
         const shiftDate = new Date(shift.shift_day);
         const day = shiftDate.toISOString().split("T")[0];
@@ -125,7 +117,6 @@ export default {
   methods: {
     async fetchRosterData() {
       try {
-        // Fetch data for the full week
         const weekStart = this.weekDates[0].fullDate;
         const weekEnd = this.weekDates[6].fullDate;
         const response = await axiosInstance.get(
@@ -137,44 +128,65 @@ export default {
       }
     },
     showModal() {
+      this.currentShiftData = null;
+      this.isEditMode = false;
       this.isModalVisible = true;
     },
-    submitShift() {
-      console.log("Shift form submitted");
-      // Add your shift submission logic here
-      this.isModalVisible = false; // Hide the modal after submission
+    editShift(shiftId) {
+      this.fetchShiftData(shiftId);
+    },
+    async fetchShiftData(shiftId) {
+      try {
+        const response = await axiosInstance.get(
+          `${endpoints.roster}${shiftId}/`
+        );
+        this.currentShiftData = response.data;
+        this.isEditMode = true;
+        this.isModalVisible = true;
+      } catch (error) {
+        console.error("Error fetching shift data:", error);
+      }
+    },
+    submitShift(shiftData) {
+      const request = this.isEditMode
+        ? axiosInstance.put(`${endpoints.roster}${shiftData.id}/`, shiftData)
+        : axiosInstance.post(endpoints.roster, shiftData);
+
+      request
+        .then((response) => {
+          console.log("Shift saved successfully:", response.data);
+          this.fetchRosterData(); // Refresh roster data
+          this.isModalVisible = false; // Hide the modal
+        })
+        .catch((error) => {
+          console.error("Error saving shift:", error);
+        });
     },
     changeWeek(direction) {
-      // Adjust the start of the week by adding/subtracting weeks
       const newStartOfWeek = new Date(this.startOfWeek);
       newStartOfWeek.setDate(newStartOfWeek.getDate() + direction * 7);
       this.startOfWeek = newStartOfWeek;
-      this.fetchRosterData(); // Fetch data for the new week
+      this.fetchRosterData();
     },
     updateWeekFromDate(date) {
-      // Update the start of the week based on the selected date
       const selectedDate = new Date(date);
       const dayOfWeek = selectedDate.getDay();
       const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
       const newStartOfWeek = new Date(selectedDate);
       newStartOfWeek.setDate(selectedDate.getDate() + mondayOffset);
       this.startOfWeek = newStartOfWeek;
-      this.fetchRosterData(); // Fetch data for the new week
+      this.fetchRosterData();
     },
     formatShiftTime(start, end) {
-      // Parse the start and end times
       const startTime = new Date(start);
       const endTime = new Date(end);
-
-      // Format the times in 24-hour format without timezone conversion
-      const startTimeFormatted = startTime.toISOString().substring(11, 16); // Extract HH:MM from ISO string
-      const endTimeFormatted = endTime.toISOString().substring(11, 16); // Extract HH:MM from ISO string
-
+      const startTimeFormatted = startTime.toISOString().substring(11, 16);
+      const endTimeFormatted = endTime.toISOString().substring(11, 16);
       return `${startTimeFormatted} - ${endTimeFormatted}`;
     },
   },
   mounted() {
-    this.fetchRosterData(); // Fetch data when the component is mounted
+    this.fetchRosterData();
   },
 };
 </script>
@@ -188,11 +200,6 @@ export default {
   text-align: center;
   font-weight: bold;
   font-size: 12px;
-}
-
-.week-content {
-  display: flex;
-  justify-content: space-between;
 }
 
 .day-column {
@@ -217,12 +224,6 @@ export default {
 
 .shift-card p {
   margin: 0;
-  font-size: 12px;
-}
-
-.no-data {
-  text-align: center;
-  color: #888;
   font-size: 12px;
 }
 </style>
