@@ -17,15 +17,21 @@
       </button>
     </div>
 
-    <div v-if="rosterData.length">
-      <div class="flex-row-space mb-20">
-        <div v-for="(date, index) in weekDates" :key="index" class="day-header">
-          {{ date.day }}<br />{{ date.date }}
-        </div>
+    <div class="flex-row-space mb-20">
+      <div v-for="(date, index) in weekDates" :key="index" class="day-header">
+        {{ date.day }}<br />{{ date.date }}
       </div>
-      <div class="flex-row-space">
-        <div v-for="(date, index) in weekDates" :key="index" class="day-column">
-          <div v-if="groupedShifts[date.fullDate]" class="shifts-container">
+    </div>
+
+    <div class="flex-row-space">
+      <div v-for="(date, index) in weekDates" :key="index" class="day-column">
+        <div class="shifts-container">
+          <div
+            v-if="
+              groupedShifts[date.fullDate] &&
+              groupedShifts[date.fullDate].length
+            "
+          >
             <div
               v-for="shift in groupedShifts[date.fullDate]"
               :key="shift.id"
@@ -42,9 +48,6 @@
           <div v-else class="fs-12 text-center">No Shifts</div>
         </div>
       </div>
-    </div>
-    <div v-else>
-      <p>No data available</p>
     </div>
 
     <!-- Modal for adding/editing shift -->

@@ -101,9 +101,9 @@ export default {
             `${endpoints.roster}${this.shiftData.id}/deactivate/`
           );
           console.log("Shift deactivated successfully");
-          this.$emit("delete"); // Emit an event to notify parent component
-          this.resetForm(); // Optionally reset the form
-          this.isModalVisible = false; // Close the modal
+          this.$emit("delete");
+          this.resetForm();
+          this.isModalVisible = false;
         } catch (error) {
           console.error("Error deactivating shift:", error);
         }
