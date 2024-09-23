@@ -2,6 +2,7 @@
   <div>
     <h2 class="h-2">{{ isEdit ? "Edit Shift" : "Add Shift" }}</h2>
     <form @submit.prevent="submitShift">
+      <!-- Existing form fields -->
       <div v-for="field in formFields" :key="field.id" class="form-group">
         <label class="mt-10" :for="field.id">{{ field.label }}</label>
         <input
@@ -27,9 +28,18 @@
           </option>
         </select>
       </div>
-      <button type="submit" class="button button--tertiary mt-10">
-        Save Shift
-      </button>
+      <div class="flex-row-space">
+        <button type="submit" class="button button--tertiary mt-10">
+          Save Shift
+        </button>
+        <button
+          v-if="isEdit"
+          @click.prevent="deleteShift"
+          class="button button--tertiary mt-10"
+        >
+          Delete Shift
+        </button>
+      </div>
     </form>
   </div>
 </template>
@@ -82,6 +92,21 @@ export default {
           }));
       } catch (error) {
         console.error("Error fetching daycares:", error);
+      }
+    },
+    async deleteShift() {
+      if (confirm("Are you sure you want to deactivate this shift?")) {
+        try {
+          await axiosInstance.patch(
+            `${endpoints.roster}${this.shiftData.id}/deactivate/`
+          );
+          console.log("Shift deactivated successfully");
+          this.$emit("delete"); // Emit an event to notify parent component
+          this.resetForm(); // Optionally reset the form
+          this.isModalVisible = false; // Close the modal
+        } catch (error) {
+          console.error("Error deactivating shift:", error);
+        }
       }
     },
     async fetchStaff(daycareId) {
