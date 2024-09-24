@@ -43,6 +43,7 @@ const endpoints = {
   product: apiConstants.api_hostname + "product/",
   addEmployee: apiConstants.api_hostname + "staff-profile/",
   roster: apiConstants.api_hostname + "roster/",
+  unavailability: apiConstants.api_hostname + "unavailability/",
 };
 
 export { axiosInstance, endpoints };

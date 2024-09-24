@@ -25,22 +25,20 @@
     </div>
 
     <div v-else-if="activeTab === 'unavailability'">
-      <p>Unavailability tab content goes here.</p>
-      <!-- I'm going to have a list here where they can add new unavailability
-      - E.g Thursdays
-      - E.g 9:00 AM - 5:00 PM on X Date 
-      -->
+      <EmployeeUnavailability />
     </div>
   </div>
 </template>
 
 <script>
 import HandleEmployeeRoster from "@/components/HandleEmployeeRoster.vue";
+import EmployeeUnavailability from "@/components/EmployeeUnavailability.vue"; // Import the new component
 
 export default {
   name: "EmployeeRosterPage",
   components: {
     HandleEmployeeRoster,
+    EmployeeUnavailability, // Declare the component here
   },
   data() {
     return {
