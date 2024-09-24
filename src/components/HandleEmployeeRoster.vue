@@ -2,7 +2,6 @@
   <div>
     <div class="flex-row-space">
       <DateSelector @apply="updateWeekFromDate" />
-
       <button
         v-if="userRole === 'O'"
         @click="showModal"
@@ -35,6 +34,9 @@
               v-for="shift in groupedShifts[date.fullDate]"
               :key="shift.id"
               class="shift-card"
+              :class="{
+                'current-user-shift': shift.staff.id === currentUserId,
+              }"
               @click="userRole === 'O' ? editShift(shift.id) : null"
             >
               <p class="bold">
@@ -58,7 +60,6 @@
         :shiftData="currentShiftData"
         :isEdit="isEditMode"
       />
-
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </Modal>
   </div>
@@ -88,6 +89,7 @@ export default {
       isEditMode: false,
       userRole: null,
       errorMessage: "",
+      currentUserId: null,
     };
   },
   computed: {
@@ -201,6 +203,7 @@ export default {
     try {
       const profile = await fetchCurrentStaffProfile();
       this.userRole = profile.role;
+      this.currentUserId = profile.id; // Set the current user ID here
       this.fetchRosterData();
     } catch (error) {
       console.error("Failed to fetch user role:", error);
@@ -235,6 +238,10 @@ export default {
   margin-bottom: 0.5rem;
   background-color: #fff;
   cursor: pointer;
+}
+
+.current-user-shift {
+  background-color: #d4edda;
 }
 
 .shift-card p {
