@@ -172,8 +172,7 @@ export default {
         ) {
           this.errorMessage = error.response.data.non_field_errors.join(", ");
         } else {
-          this.errorMessage =
-            "An error occurred while saving the shift. This Employee has already been assigned to another shift.";
+          this.errorMessage = "An error occurred while saving the shift.";
         }
       }
     },

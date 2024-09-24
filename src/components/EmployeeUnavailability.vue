@@ -50,6 +50,7 @@
           <th>Type</th>
           <th>Date/Day of Week</th>
           <th>Recurring</th>
+          <th v-if="!isCurrentUserOwner">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -61,9 +62,38 @@
             {{ daysOfWeek[item.day_of_week] }}
           </td>
           <td>{{ item.is_recurring ? "Yes" : "No" }}</td>
+          <td v-if="!isCurrentUserOwner">
+            <button
+              @click="confirmDelete(item.id)"
+              class="button button--tertiary"
+            >
+              Delete
+            </button>
+          </td>
+          <!-- Delete button -->
         </tr>
       </tbody>
     </table>
+
+    <div v-if="showConfirmation">
+      <p class="mt-30 fs-12">
+        Are you sure you want to delete this unavailability?
+      </p>
+      <div class="form-row">
+        <button
+          class="button button--tertiary mr-10"
+          @click="deleteUnavailability"
+        >
+          Yes
+        </button>
+        <button
+          class="button button--tertiary"
+          @click="showConfirmation = false"
+        >
+          No
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -90,6 +120,9 @@ export default {
       ],
       message: "",
       messageType: "",
+      showConfirmation: false,
+      confirmationId: null,
+      isCurrentUserOwner: false,
     };
   },
   methods: {
@@ -155,8 +188,34 @@ export default {
         console.error("Error adding unavailability:", error);
       }
     },
+    confirmDelete(id) {
+      this.confirmationId = id;
+      this.showConfirmation = true;
+    },
+    async deleteUnavailability() {
+      if (this.confirmationId) {
+        try {
+          const response = await axiosInstance.patch(
+            `${endpoints.unavailability}${this.confirmationId}/deactivate/`
+          );
+          if (response.status === 204) {
+            this.message = "Unavailability deleted successfully.";
+            this.messageType = "success";
+            this.fetchUnavailabilities();
+          }
+        } catch (error) {
+          this.message = "Error deleting unavailability.";
+          this.messageType = "error";
+          console.error("Error deleting unavailability:", error);
+        } finally {
+          this.showConfirmation = false;
+          this.confirmationId = null;
+        }
+      }
+    },
   },
   mounted() {
+    this.isCurrentUserOwner = false;
     this.fetchUnavailabilities();
   },
 };
