@@ -4,7 +4,6 @@
     <div class="flex-row-space">
       <DateSelector @apply="updateWeekFromDate" />
 
-      <!-- Conditionally display the Add Shift button -->
       <button
         v-if="userRole === 'O'"
         @click="showModal"
@@ -61,6 +60,9 @@
         :shiftData="currentShiftData"
         :isEdit="isEditMode"
       />
+
+      <!-- Display error message if exists -->
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </Modal>
   </div>
 </template>
@@ -88,6 +90,7 @@ export default {
       currentShiftData: null,
       isEditMode: false,
       userRole: null, // Role of the current user
+      errorMessage: "",
     };
   },
   computed: {
@@ -160,10 +163,21 @@ export default {
       try {
         const response = await request;
         console.log("Shift saved successfully:", response.data);
-        await this.fetchRosterData(); // Refresh roster data
-        this.isModalVisible = false; // Hide the modal
+        await this.fetchRosterData();
+        this.isModalVisible = false;
+        this.errorMessage = "";
       } catch (error) {
         console.error("Error saving shift:", error);
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.non_field_errors
+        ) {
+          this.errorMessage = error.response.data.non_field_errors.join(", ");
+        } else {
+          this.errorMessage =
+            "An error occurred while saving the shift. This Employee has already been assigned to another shift.";
+        }
       }
     },
     changeWeek(direction) {
@@ -194,7 +208,6 @@ export default {
       this.userRole = profile.role;
       console.log("User role fetched:", this.userRole);
 
-      // Fetch the roster data after retrieving the user's role
       this.fetchRosterData();
     } catch (error) {
       console.error("Failed to fetch user role:", error);
