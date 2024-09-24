@@ -50,7 +50,7 @@
           <th>Type</th>
           <th>Date/Day of Week</th>
           <th>Recurring</th>
-          <th v-if="!isCurrentUserOwner">Actions</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -62,15 +62,16 @@
             {{ daysOfWeek[item.day_of_week] }}
           </td>
           <td>{{ item.is_recurring ? "Yes" : "No" }}</td>
-          <td v-if="!isCurrentUserOwner">
+          <td>
+            <!-- Show delete button only if the current user is the owner -->
             <button
+              v-if="item.staff.id === currentUserId"
               @click="confirmDelete(item.id)"
               class="button button--tertiary"
             >
               Delete
             </button>
           </td>
-          <!-- Delete button -->
         </tr>
       </tbody>
     </table>
@@ -99,6 +100,7 @@
 
 <script>
 import { endpoints, axiosInstance } from "@/helpers/axiosHelper";
+import { fetchCurrentStaffProfile } from "@/helpers/fetchCurrentStaffProfile";
 
 export default {
   data() {
@@ -120,9 +122,9 @@ export default {
       ],
       message: "",
       messageType: "",
-      showConfirmation: false,
-      confirmationId: null,
-      isCurrentUserOwner: false,
+      showConfirmation: false, // For showing confirmation dialog
+      confirmationId: null, // To store the ID of the unavailability to delete
+      currentUserId: null, // Store the current user's ID
     };
   },
   methods: {
@@ -189,8 +191,8 @@ export default {
       }
     },
     confirmDelete(id) {
-      this.confirmationId = id;
-      this.showConfirmation = true;
+      this.confirmationId = id; // Store the ID of the unavailability to delete
+      this.showConfirmation = true; // Show the confirmation dialog
     },
     async deleteUnavailability() {
       if (this.confirmationId) {
@@ -208,14 +210,22 @@ export default {
           this.messageType = "error";
           console.error("Error deleting unavailability:", error);
         } finally {
-          this.showConfirmation = false;
-          this.confirmationId = null;
+          this.showConfirmation = false; // Hide confirmation dialog after action
+          this.confirmationId = null; // Reset confirmationId
         }
+      }
+    },
+    async getCurrentUserId() {
+      try {
+        const profile = await fetchCurrentStaffProfile();
+        this.currentUserId = profile.id; // Assuming profile object contains id
+      } catch (error) {
+        console.error("Error fetching current user ID:", error);
       }
     },
   },
   mounted() {
-    this.isCurrentUserOwner = false;
+    this.getCurrentUserId();
     this.fetchUnavailabilities();
   },
 };
