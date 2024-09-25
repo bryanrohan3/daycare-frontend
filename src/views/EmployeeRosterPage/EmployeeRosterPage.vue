@@ -1,6 +1,14 @@
 <template>
   <div>
-    <p class="h-1">Employee Roster</p>
+    <div class="flex-row-space gap-10">
+      <p class="h-1">Employee Roster</p>
+      <EmployeeDaycareDropdown
+        :userDaycares="userDaycares"
+        :selectedDaycareId="selectedDaycareId"
+        @update:selectedDaycareId="updateSelectedDaycareId"
+      />
+    </div>
+
     <div class="tabs">
       <div class="tab-buttons">
         <button
@@ -21,11 +29,11 @@
     </div>
 
     <div v-if="activeTab === 'roster'">
-      <HandleEmployeeRoster />
+      <HandleEmployeeRoster :selectedDaycareId="selectedDaycareId" />
     </div>
 
     <div v-else-if="activeTab === 'unavailability'">
-      <EmployeeUnavailability />
+      <EmployeeUnavailability :selectedDaycareId="selectedDaycareId" />
     </div>
   </div>
 </template>
@@ -33,17 +41,57 @@
 <script>
 import HandleEmployeeRoster from "@/components/HandleEmployeeRoster.vue";
 import EmployeeUnavailability from "@/components/EmployeeUnavailability.vue"; // Import the new component
+import EmployeeDaycareDropdown from "@/components/EmployeeDaycareDropdown.vue"; // Import the new dropdown component
+import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 
 export default {
   name: "EmployeeRosterPage",
   components: {
     HandleEmployeeRoster,
-    EmployeeUnavailability, // Declare the component here
+    EmployeeUnavailability,
+    EmployeeDaycareDropdown,
   },
   data() {
     return {
       activeTab: "roster",
+      userDaycares: [],
+      selectedDaycareId: null,
     };
+  },
+  async created() {
+    try {
+      const daycares = await this.fetchUserDaycares();
+      this.userDaycares = daycares;
+
+      if (this.userDaycares.length > 0) {
+        this.selectedDaycareId = String(this.userDaycares[0].id);
+      } else {
+        this.selectedDaycareId = null;
+      }
+    } catch (error) {
+      console.error("Error fetching user daycares:", error);
+    }
+  },
+  watch: {
+    userDaycares(newVal) {
+      if (newVal.length > 0 && this.selectedDaycareId === null) {
+        this.selectedDaycareId = newVal[0].id; // Set a valid daycare ID
+      }
+    },
+  },
+  methods: {
+    async fetchUserDaycares() {
+      try {
+        const response = await axiosInstance.get(endpoints.currentStaffProfile);
+        return response.data.daycares_names; // Adjust based on your API structure
+      } catch (error) {
+        console.error("Error fetching user daycares:", error);
+        return [];
+      }
+    },
+    updateSelectedDaycareId(newId) {
+      this.selectedDaycareId = newId !== null ? String(newId) : null; // Ensure it is a string or null
+    },
   },
 };
 </script>

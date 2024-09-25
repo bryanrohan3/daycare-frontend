@@ -79,6 +79,12 @@ export default {
     Modal,
     CreateShift,
   },
+  props: {
+    selectedDaycareId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       rosterData: [],
@@ -205,9 +211,17 @@ export default {
       this.userRole = profile.role;
       this.currentUserId = profile.id; // Set the current user ID here
       this.fetchRosterData();
+      this.daycareId = this.selectedDaycareId; // Set initial daycareId
+      this.fetchRosterData(); // Fetch the initial roster data
     } catch (error) {
       console.error("Failed to fetch user role:", error);
     }
+  },
+  watch: {
+    selectedDaycareId(newId) {
+      this.daycareId = newId; // Update daycareId when selectedDaycareId changes
+      this.fetchRosterData(); // Fetch the roster data for the new daycare ID
+    },
   },
 };
 </script>
