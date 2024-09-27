@@ -2,7 +2,6 @@
   <div>
     <h2 class="h-2">{{ isEdit ? "Edit Shift" : "Add Shift" }}</h2>
     <form @submit.prevent="submitShift">
-      <!-- Existing form fields -->
       <div v-for="field in formFields" :key="field.id" class="form-group">
         <label class="mt-10" :for="field.id">{{ field.label }}</label>
         <input
@@ -40,6 +39,7 @@
           Delete Shift
         </button>
       </div>
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </form>
   </div>
 </template>
@@ -70,8 +70,8 @@ export default {
         end_shift: "",
         shift_day: "",
       },
-      daycares: [],
       staffOptions: [],
+      errorMessage: "", // Added error message
     };
   },
   async created() {
@@ -126,7 +126,7 @@ export default {
           staffField.options = this.staffOptions;
 
           if (this.isEdit) {
-            this.formData.staff_id = this.shiftData.staff.id; // Set the current staff ID
+            this.formData.staff_id = this.shiftData.staff.id;
           }
         } catch (error) {
           console.error("Error fetching staff:", error);
@@ -135,9 +135,8 @@ export default {
     },
     formatDateTimeForInput(dateTime) {
       const date = new Date(dateTime);
-      return date.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:MM'
+      return date.toISOString().slice(0, 16);
     },
-
     handleSelectChange(fieldId) {
       if (fieldId === "daycare") {
         this.staffOptions = [];
@@ -157,24 +156,23 @@ export default {
         this.fetchStaff(this.shiftData.daycare);
       }
     },
-
-    submitShift() {
-      const request = this.isEdit
-        ? axiosInstance.put(
-            `${endpoints.roster}${this.shiftData.id}/`,
-            this.formData
-          )
-        : axiosInstance.post(endpoints.roster, this.formData);
-
-      request
-        .then((response) => {
-          console.log("Shift saved successfully:", response.data);
-          this.$emit("submit", this.formData);
-          this.resetForm();
-        })
-        .catch((error) => {
-          console.error("Error saving shift:", error);
-        });
+    async submitShift() {
+      try {
+        const request = this.isEdit
+          ? await axiosInstance.put(
+              `${endpoints.roster}${this.shiftData.id}/`,
+              this.formData
+            )
+          : await axiosInstance.post(endpoints.roster, this.formData);
+        console.log("Shift saved successfully:", request.data);
+        this.$emit("submit", this.formData);
+        this.resetForm();
+      } catch (error) {
+        console.error("Error saving shift:", error);
+        this.errorMessage =
+          error.response?.data?.non_field_errors?.join(", ") ||
+          "An error occurred while saving the shift.";
+      }
     },
     resetForm() {
       this.formData = {
@@ -185,6 +183,7 @@ export default {
         shift_day: "",
       };
       this.staffOptions = [];
+      this.errorMessage = "";
     },
   },
 };

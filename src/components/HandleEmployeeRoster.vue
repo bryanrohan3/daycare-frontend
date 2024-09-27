@@ -56,7 +56,7 @@
       @update:isVisible="isModalVisible = $event"
     >
       <CreateShift
-        @submit="submitShift"
+        @submit="fetchRosterData"
         :shiftData="currentShiftData"
         :isEdit="isEditMode"
       />
@@ -160,30 +160,6 @@ export default {
         console.error("Error fetching shift data:", error);
       }
     },
-    async submitShift(shiftData) {
-      const request = this.isEditMode
-        ? axiosInstance.put(`${endpoints.roster}${shiftData.id}/`, shiftData)
-        : axiosInstance.post(endpoints.roster, shiftData);
-
-      try {
-        const response = await request;
-        console.log("Shift saved successfully:", response.data);
-        await this.fetchRosterData();
-        this.isModalVisible = false;
-        this.errorMessage = "";
-      } catch (error) {
-        console.error("Error saving shift:", error);
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.non_field_errors
-        ) {
-          this.errorMessage = error.response.data.non_field_errors.join(", ");
-        } else {
-          this.errorMessage = "An error occurred while saving the shift.";
-        }
-      }
-    },
     changeWeek(direction) {
       const newStartOfWeek = new Date(this.startOfWeek);
       newStartOfWeek.setDate(newStartOfWeek.getDate() + direction * 7);
@@ -209,17 +185,17 @@ export default {
     try {
       const profile = await fetchCurrentStaffProfile();
       this.userRole = profile.role;
-      this.currentUserId = profile.id; // Set the current user ID here
+      this.currentUserId = profile.id;
       this.fetchRosterData();
-      this.daycareId = this.selectedDaycareId; // Set initial daycareId
-      this.fetchRosterData(); // Fetch the initial roster data
+      this.daycareId = this.selectedDaycareId;
+      this.fetchRosterData();
     } catch (error) {
       console.error("Failed to fetch user role:", error);
     }
   },
   watch: {
     selectedDaycareId(newId) {
-      this.daycareId = newId; // Update daycareId when selectedDaycareId changes
+      this.daycareId = newId;
       this.fetchRosterData(); // Fetch the roster data for the new daycare ID
     },
   },
