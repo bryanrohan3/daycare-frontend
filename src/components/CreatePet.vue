@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Add New Pet</h2>
+    <p class="h-2 bold">Add New Pet</p>
     <form @submit.prevent="submitForm">
       <div v-for="field in petFormFields" :key="field.id" class="form-group">
         <label class="mt-10" :for="field.id">{{ field.label }}</label>

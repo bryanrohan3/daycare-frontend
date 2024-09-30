@@ -9,6 +9,7 @@ import DaycareDetailPage from "@/views/DaycareDetailPage.vue/DaycareDetailPage.v
 import DaycareCreateEditPage from "@/components/DaycareCreateEditPage.vue";
 import EmployeeRosterPage from "@/views/EmployeeRosterPage/EmployeeRosterPage.vue";
 import CustomerPetPage from "@/views/CustomerPetPage/CustomerPetPage.vue";
+import PetProfilePage from "@/views/PetProfilePage/PetProfilePage.vue";
 // Layouts
 import StaffLayout from "@/components/layouts/StaffLayout.vue";
 import CustomerLayout from "@/components/layouts/CustomerLayout.vue";
@@ -72,6 +73,12 @@ const routes = [
         path: "pets",
         name: "CustomerPetPage",
         component: CustomerPetPage,
+      },
+      {
+        path: "pets/:id/",
+        name: "PetProfile",
+        component: PetProfilePage,
+        props: true, // Pass the ID as a prop to the component
       },
     ],
   },

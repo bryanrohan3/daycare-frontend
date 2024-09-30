@@ -19,24 +19,19 @@
           <th>Public</th>
           <th>Active</th>
           <th>Customers</th>
-          <!-- New Column for Customers -->
         </tr>
       </thead>
       <tbody>
-        <tr v-for="pet in pets" :key="pet.id">
+        <tr v-for="pet in pets" :key="pet.id" @click="goToPetProfile(pet.id)">
           <td v-if="isEditing">
             <input v-model="pet.pet_name" />
           </td>
-          <td v-else>
-            {{ pet.pet_name }}
-          </td>
+          <td v-else>{{ pet.pet_name }}</td>
 
           <td v-if="isEditing">
             <input v-model="pet.pet_bio" />
           </td>
-          <td v-else>
-            {{ pet.pet_bio }}
-          </td>
+          <td v-else>{{ pet.pet_bio }}</td>
 
           <td>
             <span v-if="pet.pet_types_display.length">
@@ -51,9 +46,7 @@
               <option :value="false">No</option>
             </select>
           </td>
-          <td v-else>
-            {{ pet.is_public ? "Yes" : "No" }}
-          </td>
+          <td v-else>{{ pet.is_public ? "Yes" : "No" }}</td>
 
           <td v-if="isEditing">
             <select v-model="pet.is_active">
@@ -61,9 +54,7 @@
               <option :value="false">Inactive</option>
             </select>
           </td>
-          <td v-else>
-            {{ pet.is_active ? "Active" : "Inactive" }}
-          </td>
+          <td v-else>{{ pet.is_active ? "Active" : "Inactive" }}</td>
 
           <td>
             <span v-for="(customer, index) in pet.customers" :key="customer.id">
@@ -71,8 +62,6 @@
               }}<span v-if="index < pet.customers.length - 1">, </span>
             </span>
           </td>
-
-          <!-- New Column for displaying Customer Details -->
         </tr>
       </tbody>
     </table>
@@ -138,6 +127,10 @@ export default {
     },
     showAddPetModal() {
       this.isAddPetModalVisible = true;
+    },
+    goToPetProfile(id) {
+      // Navigate to the pet profile page
+      this.$router.push({ name: "PetProfile", params: { id } });
     },
   },
   created() {
