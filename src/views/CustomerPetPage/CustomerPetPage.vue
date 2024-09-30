@@ -18,6 +18,8 @@
           <th>Type</th>
           <th>Public</th>
           <th>Active</th>
+          <th>Customers</th>
+          <!-- New Column for Customers -->
         </tr>
       </thead>
       <tbody>
@@ -62,6 +64,15 @@
           <td v-else>
             {{ pet.is_active ? "Active" : "Inactive" }}
           </td>
+
+          <td>
+            <span v-for="(customer, index) in pet.customers" :key="customer.id">
+              {{ customer.full_name
+              }}<span v-if="index < pet.customers.length - 1">, </span>
+            </span>
+          </td>
+
+          <!-- New Column for displaying Customer Details -->
         </tr>
       </tbody>
     </table>
