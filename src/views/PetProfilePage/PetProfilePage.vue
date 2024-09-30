@@ -18,7 +18,6 @@
     <p>{{ pet.is_public ? "Yes" : "No" }}</p>
     <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
     <p>
-      <strong>Customers:</strong>
       <span v-for="(customer, index) in pet.customers" :key="customer.id">
         {{ customer.full_name
         }}<span v-if="index < pet.customers.length - 1">, </span>

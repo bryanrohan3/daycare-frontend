@@ -5,9 +5,8 @@
       <div v-for="field in petFormFields" :key="field.id" class="form-group">
         <label class="mt-10" :for="field.id">{{ field.label }}</label>
 
-        <component
+        <select
           v-if="field.type === 'select'"
-          :is="'select'"
           :id="field.id"
           v-model="selectedPetType"
           @change="updatePetTypes"
@@ -21,7 +20,7 @@
           >
             {{ option.label }}
           </option>
-        </component>
+        </select>
 
         <input
           v-else-if="field.type === 'text'"
@@ -64,26 +63,24 @@ export default {
   data() {
     return {
       petFormFields: petFormFields,
-      selectedPetType: null, // Initialize selected pet type
+      selectedPetType: null,
       formData: {
         pet_name: "",
-        pet_types: [], // Initialize as an array
+        pet_types: [],
         pet_bio: "",
-        is_public: true, // Initialize as true
+        is_public: true,
         is_active: true,
       },
     };
   },
   methods: {
     updatePetTypes() {
-      // Update pet_types as an array containing the selected value
       this.formData.pet_types = this.selectedPetType
         ? [this.selectedPetType]
         : [];
     },
     async submitForm() {
       try {
-        // Log the formData before submitting
         console.log("Submitting form data:", this.formData);
         await axiosInstance.post(endpoints.createPet, this.formData);
         this.$emit("petAdded");
@@ -98,10 +95,10 @@ export default {
         pet_name: "",
         pet_types: [],
         pet_bio: "",
-        is_public: true, // Reset to true when form is reset
+        is_public: true,
         is_active: true,
       };
-      this.selectedPetType = null; // Reset the selected pet type
+      this.selectedPetType = null;
     },
   },
 };
