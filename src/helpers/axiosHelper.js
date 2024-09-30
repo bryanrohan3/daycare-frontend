@@ -45,6 +45,8 @@ const endpoints = {
   roster: apiConstants.api_hostname + "roster/",
   unavailability: apiConstants.api_hostname + "unavailability/",
   customerProfile: apiConstants.api_hostname + "customer-profile/current/",
+  updatePet: (petId) => `pet/${petId}/`,
+  createPet: apiConstants.api_hostname + "pet/",
 };
 
 export { axiosInstance, endpoints };
