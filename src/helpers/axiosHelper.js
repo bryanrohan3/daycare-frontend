@@ -44,6 +44,7 @@ const endpoints = {
   addEmployee: apiConstants.api_hostname + "staff-profile/",
   roster: apiConstants.api_hostname + "roster/",
   unavailability: apiConstants.api_hostname + "unavailability/",
+  customerProfile: apiConstants.api_hostname + "customer-profile/current/",
 };
 
 export { axiosInstance, endpoints };

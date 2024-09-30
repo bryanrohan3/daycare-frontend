@@ -8,8 +8,10 @@ import CreateDaycarePage from "@/views/CreateDaycarePage/CreateDaycarePage.vue";
 import DaycareDetailPage from "@/views/DaycareDetailPage.vue/DaycareDetailPage.vue";
 import DaycareCreateEditPage from "@/components/DaycareCreateEditPage.vue";
 import EmployeeRosterPage from "@/views/EmployeeRosterPage/EmployeeRosterPage.vue";
+import CustomerPetPage from "@/views/CustomerPetPage/CustomerPetPage.vue";
 // Layouts
 import StaffLayout from "@/components/layouts/StaffLayout.vue";
+import CustomerLayout from "@/components/layouts/CustomerLayout.vue";
 
 const routes = [
   {
@@ -58,12 +60,18 @@ const routes = [
   },
   {
     path: "/customer",
+    component: CustomerLayout,
     meta: { requiresAuth: true, account_type: "customer" },
     children: [
       {
         path: "home",
         name: "CustomerHomePage",
         component: CustomerHomePage,
+      },
+      {
+        path: "pets",
+        name: "CustomerPetPage",
+        component: CustomerPetPage,
       },
     ],
   },

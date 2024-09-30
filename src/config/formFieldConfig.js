@@ -317,3 +317,42 @@ export const shiftFormFields = [
     required: true,
   },
 ];
+
+// config/formFieldConfig.js
+export const petFormFields = [
+  {
+    id: "pet_name",
+    label: "Pet Name",
+    type: "text",
+    model: "pet_name",
+    required: true,
+  },
+  {
+    id: "pet_types",
+    label: "Pet Type",
+    type: "select",
+    model: "pet_types",
+    required: true,
+    options: [
+      { id: 1, label: "Dog" },
+      { id: 2, label: "Cat" },
+      { id: 3, label: "Bird" },
+      { id: 4, label: "Fish" },
+      { id: 5, label: "Lizard" },
+    ],
+  },
+  {
+    id: "pet_bio",
+    label: "Pet Bio",
+    type: "textarea",
+    model: "pet_bio",
+    required: false,
+  },
+  {
+    id: "is_public",
+    label: "Public",
+    type: "checkbox",
+    model: "is_public",
+    required: false,
+  },
+];
