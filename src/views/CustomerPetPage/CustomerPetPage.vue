@@ -22,7 +22,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="pet in pets" :key="pet.id" @click="goToPetProfile(pet.id)">
+        <tr
+          v-for="pet in pets"
+          :key="pet.id"
+          @click="!isEditing && goToPetProfile(pet.id)"
+        >
           <td v-if="isEditing">
             <input v-model="pet.pet_name" />
           </td>
