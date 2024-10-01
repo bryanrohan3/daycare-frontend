@@ -45,12 +45,13 @@ export default {
   data() {
     return {
       pet: null,
-      isOwner: false, // Flag to check if the current user is the owner
+      currentUser: null,
+      isOwner: false,
     };
   },
   async created() {
     await this.fetchPetDetails();
-    await this.fetchCurrentUser(); // Fetch the current user data
+    await this.fetchCurrentUser();
   },
   methods: {
     async fetchPetDetails() {
@@ -65,16 +66,19 @@ export default {
     },
     async fetchCurrentUser() {
       try {
-        // Fetch the current user's profile data
-        const response = await axiosInstance.get(endpoints.customerProfile); // Use the appropriate endpoint for the current user's profile
-        const currentUserId = response.data.id; // Get the current user ID
+        const response = await axiosInstance.get(endpoints.customerProfile);
+        this.currentUser = response.data;
+        const currentUserId = this.currentUser.id;
 
-        // Check if the current user is an owner of the pet
         this.isOwner = this.pet.customers.some(
           (customer) => customer.id === currentUserId
         );
       } catch (error) {
-        console.error("Error fetching current user data:", error);
+        if (error.response && error.response.status === 403) {
+          return;
+        } else {
+          console.error("Error fetching current user data:", error);
+        }
       }
     },
   },
