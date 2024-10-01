@@ -24,7 +24,7 @@
       </span>
     </p>
   </div>
-  <div v-else>Loading pet details...</div>
+  <div class="h-small mt-30 text-center" v-else>Nothing Found</div>
 </template>
 
 <script>

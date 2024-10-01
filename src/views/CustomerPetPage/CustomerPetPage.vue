@@ -134,7 +134,7 @@ export default {
     },
     goToPetProfile(id) {
       // Navigate to the pet profile page
-      this.$router.push({ name: "PetProfile", params: { id } });
+      this.$router.push({ name: "CustomerPetProfile", params: { id } });
     },
   },
   created() {

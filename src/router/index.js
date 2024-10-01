@@ -57,6 +57,13 @@ const routes = [
         name: "EmployeeRosterPage",
         component: EmployeeRosterPage,
       },
+      {
+        path: "pets/:id/",
+        name: "StaffPetProfile",
+        component: PetProfilePage,
+        props: true,
+        meta: { requiresAuth: true, account_type: "staff" }, // Staff access only
+      },
     ],
   },
   {
@@ -76,9 +83,10 @@ const routes = [
       },
       {
         path: "pets/:id/",
-        name: "PetProfile",
+        name: "CustomerPetProfile",
         component: PetProfilePage,
-        props: true, // Pass the ID as a prop to the component
+        props: true,
+        meta: { requiresAuth: true, account_type: "customer" }, // Customer access only
       },
     ],
   },
@@ -95,8 +103,19 @@ router.beforeEach((to, from, next) => {
 
   if (requiresAuth && !store.getters.getAuthToken) {
     next("/login");
-  } else if (requiresAuth && userAccountType !== to.meta.account_type) {
-    next("/login"); // Redirect to login if role does not match
+  } else if (requiresAuth && to.meta.account_type) {
+    // Check if the account_type is an array (for routes like PetProfilePage)
+    if (Array.isArray(to.meta.account_type)) {
+      if (to.meta.account_type.includes(userAccountType)) {
+        next();
+      } else {
+        next("/login"); // Redirect if the user type isn't allowed
+      }
+    } else if (userAccountType !== to.meta.account_type) {
+      next("/login"); // Redirect if role does not match and it's not an array
+    } else {
+      next();
+    }
   } else {
     next();
   }
