@@ -13,16 +13,26 @@
     </nav>
 
     <p class="h-1">{{ pet.pet_name }}</p>
-    <p>{{ pet.pet_bio }}</p>
-    <p>{{ pet.pet_types_display.join(", ") }}</p>
-    <p>{{ pet.is_public ? "Yes" : "No" }}</p>
-    <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
-    <p>
-      <span v-for="(customer, index) in pet.customers" :key="customer.id">
-        {{ customer.full_name
-        }}<span v-if="index < pet.customers.length - 1">, </span>
-      </span>
-    </p>
+
+    <!-- Display all details for the owner -->
+    <template v-if="isOwner || pet.is_public">
+      <p>{{ pet.pet_bio }}</p>
+      <p>{{ pet.pet_types_display.join(", ") }}</p>
+      <p>{{ pet.is_public ? "Yes" : "No" }}</p>
+      <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
+      <p>
+        <span v-for="(customer, index) in pet.customers" :key="customer.id">
+          {{ customer.full_name
+          }}<span v-if="index < pet.customers.length - 1">, </span>
+        </span>
+      </p>
+    </template>
+
+    <!-- Display limited details for others -->
+    <template v-else>
+      <p>{{ pet.is_public ? "Yes" : "No" }}</p>
+      <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
+    </template>
   </div>
   <div class="h-small mt-30 text-center" v-else>Nothing Found</div>
 </template>
@@ -35,10 +45,12 @@ export default {
   data() {
     return {
       pet: null,
+      isOwner: false, // Flag to check if the current user is the owner
     };
   },
   async created() {
     await this.fetchPetDetails();
+    await this.fetchCurrentUser(); // Fetch the current user data
   },
   methods: {
     async fetchPetDetails() {
@@ -49,6 +61,20 @@ export default {
         this.pet = response.data;
       } catch (error) {
         console.error("Error fetching pet details:", error);
+      }
+    },
+    async fetchCurrentUser() {
+      try {
+        // Fetch the current user's profile data
+        const response = await axiosInstance.get(endpoints.customerProfile); // Use the appropriate endpoint for the current user's profile
+        const currentUserId = response.data.id; // Get the current user ID
+
+        // Check if the current user is an owner of the pet
+        this.isOwner = this.pet.customers.some(
+          (customer) => customer.id === currentUserId
+        );
+      } catch (error) {
+        console.error("Error fetching current user data:", error);
       }
     },
   },
