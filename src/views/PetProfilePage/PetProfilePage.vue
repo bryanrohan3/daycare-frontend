@@ -14,44 +14,47 @@
 
     <p class="h-1">{{ pet.pet_name }}</p>
 
-    <Tabs :tabs="tabs">
-      <template v-slot="{ currentTab }">
-        <div class="fs-12" v-if="currentTab === 'about'">
-          <!-- About Me Section -->
-          <template v-if="isOwner || pet.is_public">
-            <p>{{ pet.pet_bio }}</p>
-            <p>{{ pet.pet_types_display.join(", ") }}</p>
-            <p>{{ pet.is_public ? "Yes" : "No" }}</p>
-            <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
-            <p>
-              <span
-                v-for="(customer, index) in pet.customers"
-                :key="customer.id"
-              >
-                {{ customer.full_name }}
-                <span v-if="index < pet.customers.length - 1">, </span>
-              </span>
-            </p>
-          </template>
-          <template v-else>
-            <p>{{ pet.is_public ? "Yes" : "No" }}</p>
-            <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
-          </template>
-        </div>
+    <div v-if="isOwner || pet.is_public">
+      <Tabs :tabs="tabs">
+        <template v-slot="{ currentTab }">
+          <div class="fs-12" v-if="currentTab === 'about'">
+            <!-- About Me Section -->
+            <template v-if="isOwner || pet.is_public">
+              <p>{{ pet.pet_bio }}</p>
+              <p>{{ pet.pet_types_display.join(", ") }}</p>
+              <p>
+                <span
+                  v-for="(customer, index) in pet.customers"
+                  :key="customer.id"
+                >
+                  {{ customer.full_name }}
+                  <span v-if="index < pet.customers.length - 1">, </span>
+                </span>
+              </p>
+            </template>
+            <template v-else>
+              <p class="text-center">This pet is not public.</p>
+            </template>
+          </div>
 
-        <div class="fs-12 mt-30 text-center" v-if="currentTab === 'posts'">
-          <!-- This is where the social media tagged posts will go -->
-          <p>No posts available.</p>
-        </div>
-      </template>
-    </Tabs>
+          <div class="fs-12 mt-30 text-center" v-if="currentTab === 'posts'">
+            <p>No posts available.</p>
+          </div>
+        </template>
+      </Tabs>
+    </div>
+
+    <div v-else class="text-center">
+      <p class="fs-12 mt-30">Account is on Private</p>
+    </div>
   </div>
+
   <div class="h-small mt-30 text-center" v-else>Nothing Found</div>
 </template>
 
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
-import Tabs from "@/components/Tabs.vue"; // Import the Tabs component
+import Tabs from "@/components/Tabs.vue";
 
 export default {
   name: "PetProfilePage",
