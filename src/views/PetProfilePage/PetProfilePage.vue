@@ -1,7 +1,7 @@
 <template>
   <div v-if="pet">
     <!-- Breadcrumb navigation !! Will make into Component soon -->
-    <nav aria-label="breadcrumb">
+    <nav v-if="isOwner" aria-label="breadcrumb">
       <ol class="breadcrumb fs-12">
         <li class="breadcrumb-item fs-12">
           <router-link to="/customer/pets/">Pets</router-link>
