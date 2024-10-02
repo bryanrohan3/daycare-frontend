@@ -14,39 +14,59 @@
 
     <p class="h-1">{{ pet.pet_name }}</p>
 
-    <!-- Display all details for the owner -->
-    <template v-if="isOwner || pet.is_public">
-      <p>{{ pet.pet_bio }}</p>
-      <p>{{ pet.pet_types_display.join(", ") }}</p>
-      <p>{{ pet.is_public ? "Yes" : "No" }}</p>
-      <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
-      <p>
-        <span v-for="(customer, index) in pet.customers" :key="customer.id">
-          {{ customer.full_name
-          }}<span v-if="index < pet.customers.length - 1">, </span>
-        </span>
-      </p>
-    </template>
+    <Tabs :tabs="tabs">
+      <template v-slot="{ currentTab }">
+        <div class="fs-12" v-if="currentTab === 'about'">
+          <!-- About Me Section -->
+          <template v-if="isOwner || pet.is_public">
+            <p>{{ pet.pet_bio }}</p>
+            <p>{{ pet.pet_types_display.join(", ") }}</p>
+            <p>{{ pet.is_public ? "Yes" : "No" }}</p>
+            <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
+            <p>
+              <span
+                v-for="(customer, index) in pet.customers"
+                :key="customer.id"
+              >
+                {{ customer.full_name }}
+                <span v-if="index < pet.customers.length - 1">, </span>
+              </span>
+            </p>
+          </template>
+          <template v-else>
+            <p>{{ pet.is_public ? "Yes" : "No" }}</p>
+            <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
+          </template>
+        </div>
 
-    <!-- Display limited details for others -->
-    <template v-else>
-      <p>{{ pet.is_public ? "Yes" : "No" }}</p>
-      <p>{{ pet.is_active ? "Active" : "Inactive" }}</p>
-    </template>
+        <div class="fs-12 mt-30 text-center" v-if="currentTab === 'posts'">
+          <!-- This is where the social media tagged posts will go -->
+          <p>No posts available.</p>
+        </div>
+      </template>
+    </Tabs>
   </div>
   <div class="h-small mt-30 text-center" v-else>Nothing Found</div>
 </template>
 
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import Tabs from "@/components/Tabs.vue"; // Import the Tabs component
 
 export default {
   name: "PetProfilePage",
+  components: {
+    Tabs,
+  },
   data() {
     return {
       pet: null,
       currentUser: null,
       isOwner: false,
+      tabs: [
+        { name: "about", label: "About Me" },
+        { name: "posts", label: "Posts" },
+      ],
     };
   },
   async created() {
@@ -91,12 +111,10 @@ export default {
   list-style: none;
   padding: 0;
   margin-bottom: 1rem;
-  background-color: transparent;
 }
 .breadcrumb-item + .breadcrumb-item::before {
   content: " / ";
   padding: 0 5px;
-  color: #6c757d;
 }
 .breadcrumb-item > .router-link-active {
   text-decoration: none;
