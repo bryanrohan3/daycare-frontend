@@ -13,6 +13,7 @@
     </nav>
 
     <p class="h-1">{{ pet.pet_name }}</p>
+    <p class="fs-12">{{ pet.pet_bio }}</p>
 
     <div v-if="isOwner || pet.is_public">
       <Tabs :tabs="tabs">
@@ -20,7 +21,6 @@
           <div class="fs-12" v-if="currentTab === 'about'">
             <!-- About Me Section -->
             <template v-if="isOwner || pet.is_public">
-              <p>{{ pet.pet_bio }}</p>
               <p>{{ pet.pet_types_display.join(", ") }}</p>
               <p>
                 <span
