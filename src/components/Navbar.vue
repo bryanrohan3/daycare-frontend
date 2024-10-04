@@ -23,14 +23,4 @@ export default {
 
 <style scoped>
 @import "@/utils/padding.scss";
-/* Short Term -> Will add to scss file after */
-.navbar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.navbar a {
-  color: #333;
-  text-decoration: none;
-}
 </style>

@@ -9,6 +9,7 @@
 
 <script>
 import Navbar from "@/components/Navbar.vue";
+import { staffLinks } from "@/config/formFieldConfig.js";
 
 export default {
   name: "StaffLayout",
@@ -17,17 +18,7 @@ export default {
   },
   data() {
     return {
-      // Add into FormField Later
-      staffLinks: [
-        { name: "dashboard", label: "Dashboard", path: "/staff/dashboard" },
-        {
-          name: "create-daycare",
-          label: "Create Daycare",
-          path: "/staff/create-daycare",
-        },
-        { name: "roster", label: "Employee Roster", path: "/staff/roster" },
-        { name: "daycares", label: "Daycare", path: "/staff/daycare" },
-      ],
+      staffLinks,
     };
   },
 };

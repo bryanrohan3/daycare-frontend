@@ -9,6 +9,7 @@
 
 <script>
 import Navbar from "@/components/Navbar.vue";
+import { customerLinks } from "@/config/formFieldConfig.js";
 
 export default {
   name: "CustomerLayout",
@@ -17,11 +18,7 @@ export default {
   },
   data() {
     return {
-      // Add into FormField Later
-      customerLinks: [
-        { name: "home", label: "Home", path: "/customer/home" },
-        { name: "pets", label: "Pets", path: "/customer/pets" },
-      ],
+      customerLinks,
     };
   },
 };

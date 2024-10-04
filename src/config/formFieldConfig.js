@@ -356,3 +356,19 @@ export const petFormFields = [
     required: false,
   },
 ];
+
+export const customerLinks = [
+  { name: "home", label: "Home", path: "/customer/home" },
+  { name: "pets", label: "Pets", path: "/customer/pets" },
+];
+
+export const staffLinks = [
+  { name: "dashboard", label: "Dashboard", path: "/staff/dashboard" },
+  {
+    name: "create-daycare",
+    label: "Create Daycare",
+    path: "/staff/create-daycare",
+  },
+  { name: "roster", label: "Employee Roster", path: "/staff/roster" },
+  { name: "daycares", label: "Daycare", path: "/staff/daycare" },
+];
