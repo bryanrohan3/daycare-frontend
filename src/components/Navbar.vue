@@ -1,9 +1,10 @@
-<!-- Navbar.vue -->
 <template>
   <nav class="navbar fs-12 pl-30">
     <ul class="mt-30">
       <li class="mt-20" v-for="link in links" :key="link.name">
-        <router-link :to="link.path">{{ link.label }}</router-link>
+        <router-link :to="link.path" active-class="active-link bold">
+          {{ link.label }}
+        </router-link>
       </li>
     </ul>
   </nav>
@@ -20,7 +21,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-@import "@/utils/padding.scss";
-</style>

@@ -3,7 +3,7 @@
 }
 
 .navbar {
-  width: 15%;
+  width: 17%;
   color: #fff;
   background-color: #e5e5e5;
   padding: 2.5rem;
@@ -42,4 +42,8 @@
 
 .navbar a:hover {
   background-color: #d4d4d4; /* Slightly darker shade for hover effect */
+}
+
+.navbar a.active-link {
+  color: #eb5a58; /* Color for active link */
 }
