@@ -32,15 +32,9 @@
               <p class="bold">
                 {{ formatBookingTime(booking.start_time, booking.end_time) }}
               </p>
-              <p>
-                <!-- {{ booking.customer.full_name }} -->
-                << Customer Name >>
-              </p>
-              <p>
-                <!-- {{ booking.pet.pet_name }} -->
-                << Pet Name >>
-              </p>
-              <p class="bold">{{ booking.status }}</p>
+              <p>C: {{ booking.customer_details.full_name }}</p>
+              <p>P: {{ booking.pet_details.pet_name }}</p>
+              <p class="bold">S: {{ booking.status }}</p>
             </div>
           </div>
           <div v-else class="fs-12 text-center">No Bookings</div>
