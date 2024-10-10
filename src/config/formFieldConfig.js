@@ -371,4 +371,5 @@ export const staffLinks = [
   },
   { name: "roster", label: "Employee Roster", path: "/staff/roster" },
   { name: "daycares", label: "Daycare", path: "/staff/daycare" },
+  { name: "bookings", label: "Bookings", path: "/staff/bookings" },
 ];

@@ -1,14 +1,8 @@
+<!-- Need to make this page a componenet as it is reusing same code in HandleEmployeeRoster -->
 <template>
   <div>
     <div class="flex-row-space">
       <DateSelector @apply="updateWeekFromDate" />
-      <button
-        v-if="userRole === 'O'"
-        @click="showModal"
-        class="button button--tertiary mt-5 pad-5"
-      >
-        Add Shift
-      </button>
     </div>
 
     <div class="flex-row-space mb-20 mt-20">
@@ -28,56 +22,43 @@
 
     <div class="flex-row-space">
       <div v-for="(date, index) in weekDates" :key="index" class="day-column">
-        <div class="shifts-container">
-          <div v-if="groupedShifts[date.fullDate]?.length">
+        <div class="shift-container">
+          <div v-if="groupedBookings[date.fullDate]?.length">
             <div
-              v-for="shift in groupedShifts[date.fullDate]"
-              :key="shift.id"
+              v-for="booking in groupedBookings[date.fullDate]"
+              :key="booking.id"
               class="shift-card"
-              :class="{
-                'current-user-shift': shift.staff.id === currentUserId,
-              }"
-              @click="userRole === 'O' ? editShift(shift.id) : null"
             >
               <p class="bold">
-                {{ formatShiftTime(shift.start_shift, shift.end_shift) }}
+                {{ formatBookingTime(booking.start_time, booking.end_time) }}
               </p>
-              <p>{{ shift.staff.first_name }} {{ shift.staff.last_name }}</p>
-              <p>{{ shift.staff.role === "E" ? "Employee" : "Owner" }}</p>
+              <p>
+                <!-- {{ booking.customer.full_name }} -->
+                << Customer Name >>
+              </p>
+              <p>
+                <!-- {{ booking.pet.pet_name }} -->
+                << Pet Name >>
+              </p>
+              <p class="bold">{{ booking.status }}</p>
             </div>
           </div>
-          <div v-else class="fs-12 text-center">No Shifts</div>
+          <div v-else class="fs-12 text-center">No Bookings</div>
         </div>
       </div>
     </div>
-
-    <Modal
-      :isVisible="isModalVisible"
-      @update:isVisible="isModalVisible = $event"
-    >
-      <CreateShift
-        @submit="fetchRosterData"
-        :shiftData="currentShiftData"
-        :isEdit="isEditMode"
-      />
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-    </Modal>
   </div>
 </template>
 
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import DateSelector from "@/components/DateSelector.vue";
-import Modal from "@/components/Modal.vue";
-import CreateShift from "@/components/CreateShift.vue";
 import { fetchCurrentStaffProfile } from "@/helpers/fetchCurrentStaffProfile";
 
 export default {
-  name: "HandleEmployeeRoster",
+  name: "HandleDaycareBookings",
   components: {
     DateSelector,
-    Modal,
-    CreateShift,
   },
   props: {
     selectedDaycareId: {
@@ -87,15 +68,10 @@ export default {
   },
   data() {
     return {
-      rosterData: [],
-      daycareId: 1,
+      bookingData: [],
+      daycareId: null,
       startOfWeek: new Date(),
-      isModalVisible: false,
-      currentShiftData: null,
-      isEditMode: false,
-      userRole: null,
       errorMessage: "",
-      currentUserId: null,
     };
   },
   computed: {
@@ -113,58 +89,38 @@ export default {
         };
       });
     },
-    groupedShifts() {
-      return this.rosterData.reduce((acc, shift) => {
-        const day = new Date(shift.shift_day).toISOString().split("T")[0];
-        acc[day] = acc[day] || [];
-        acc[day].push(shift);
+    groupedBookings() {
+      return this.bookingData.reduce((acc, booking) => {
+        const dateKey = booking.start_time.split("T")[0]; // Group by date
+        if (!acc[dateKey]) acc[dateKey] = [];
+        acc[dateKey].push(booking);
         return acc;
       }, {});
     },
   },
   methods: {
-    async fetchRosterData() {
+    async fetchBookingData() {
       try {
+        if (!this.daycareId) return;
+
         const [weekStart, weekEnd] = [
           this.weekDates[0].fullDate,
           this.weekDates[6].fullDate,
         ];
         const response = await axiosInstance.get(
-          `${endpoints.roster}?daycare=${this.daycareId}&start_date=${weekStart}&end_date=${weekEnd}`
+          `${endpoints.bookings}?daycare=${this.daycareId}&start_date=${weekStart}&end_date=${weekEnd}`
         );
-        this.rosterData = response.data;
+        this.bookingData = response.data;
       } catch (error) {
-        console.error("Error fetching roster data:", error);
-      }
-    },
-    showModal() {
-      this.resetShiftData();
-      this.isModalVisible = true;
-    },
-    resetShiftData() {
-      this.currentShiftData = null;
-      this.isEditMode = false;
-    },
-    async editShift(shiftId) {
-      await this.fetchShiftData(shiftId);
-    },
-    async fetchShiftData(shiftId) {
-      try {
-        const response = await axiosInstance.get(
-          `${endpoints.roster}${shiftId}/`
-        );
-        this.currentShiftData = response.data;
-        this.isEditMode = true;
-        this.isModalVisible = true;
-      } catch (error) {
-        console.error("Error fetching shift data:", error);
+        console.error("Error fetching booking data:", error);
+        this.errorMessage = "Failed to fetch bookings. Please try again.";
       }
     },
     changeWeek(direction) {
       const newStartOfWeek = new Date(this.startOfWeek);
       newStartOfWeek.setDate(newStartOfWeek.getDate() + direction * 7);
       this.startOfWeek = newStartOfWeek;
-      this.fetchRosterData();
+      this.fetchBookingData();
     },
     updateWeekFromDate(date) {
       const selectedDate = new Date(date);
@@ -172,9 +128,9 @@ export default {
         selectedDate.getDay() === 0 ? -6 : 1 - selectedDate.getDay();
       this.startOfWeek = new Date(selectedDate);
       this.startOfWeek.setDate(selectedDate.getDate() + mondayOffset);
-      this.fetchRosterData();
+      this.fetchBookingData();
     },
-    formatShiftTime(start, end) {
+    formatBookingTime(start, end) {
       return `${this.formatTime(start)} - ${this.formatTime(end)}`;
     },
     formatTime(date) {
@@ -184,11 +140,8 @@ export default {
   async mounted() {
     try {
       const profile = await fetchCurrentStaffProfile();
-      this.userRole = profile.role;
-      this.currentUserId = profile.id;
-      this.fetchRosterData();
       this.daycareId = this.selectedDaycareId;
-      this.fetchRosterData();
+      await this.fetchBookingData();
     } catch (error) {
       console.error("Failed to fetch user role:", error);
     }
@@ -196,8 +149,12 @@ export default {
   watch: {
     selectedDaycareId(newId) {
       this.daycareId = newId;
-      this.fetchRosterData(); // Fetch the roster data for the new daycare ID
+      this.fetchBookingData();
     },
   },
 };
 </script>
+
+<style scoped>
+@import "@/utils/roster.scss";
+</style>

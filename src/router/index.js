@@ -10,6 +10,7 @@ import DaycareCreateEditPage from "@/components/DaycareCreateEditPage.vue";
 import EmployeeRosterPage from "@/views/EmployeeRosterPage/EmployeeRosterPage.vue";
 import CustomerPetPage from "@/views/CustomerPetPage/CustomerPetPage.vue";
 import PetProfilePage from "@/views/PetProfilePage/PetProfilePage.vue";
+import DaycareBookingPage from "@/views/DaycareBookingPage/DaycareBookingPage.vue";
 // Layouts
 import StaffLayout from "@/components/layouts/StaffLayout.vue";
 import CustomerLayout from "@/components/layouts/CustomerLayout.vue";
@@ -63,6 +64,11 @@ const routes = [
         component: PetProfilePage,
         props: true,
         meta: { requiresAuth: true, account_type: "staff" }, // Staff access only
+      },
+      {
+        path: "bookings",
+        name: "DaycareBookingPage",
+        component: DaycareBookingPage,
       },
     ],
   },
