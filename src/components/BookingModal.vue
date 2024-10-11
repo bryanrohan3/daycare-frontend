@@ -106,6 +106,8 @@
           Confirm Booking
         </button>
       </div>
+
+      <div v-if="errorMessage" class="mt-10 error">{{ errorMessage }}</div>
     </div>
   </Modal>
 </template>
@@ -129,6 +131,7 @@ export default {
     return {
       createBookingFields,
       currentStep: 1,
+      errorMessage: "", // Add errorMessage data property
       formModel: {
         customerSearch: "",
         selectedPet: null,
@@ -219,6 +222,12 @@ export default {
         this.closeModal();
         this.resetForm();
       } catch (error) {
+        // Extract specific error message from the response
+        if (error.response && error.response.data) {
+          this.errorMessage = Object.values(error.response.data).join(", ");
+        } else {
+          this.errorMessage = "An unknown error occurred. Please try again.";
+        }
         console.error("Error creating booking:", error);
       }
     },
@@ -226,6 +235,7 @@ export default {
     closeModal() {
       this.$emit("update:isVisible", false);
       this.resetForm();
+      this.errorMessage = ""; // Clear error message on modal close
     },
 
     resetForm() {
