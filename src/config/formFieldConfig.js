@@ -373,3 +373,51 @@ export const staffLinks = [
   { name: "daycares", label: "Daycare", path: "/staff/daycare" },
   { name: "bookings", label: "Bookings", path: "/staff/bookings" },
 ];
+
+export const createBookingFields = [
+  {
+    id: "customer_search",
+    label: "Search Customer by Name",
+    type: "text",
+    model: "customerSearch",
+    required: true,
+  },
+  {
+    id: "selected_pet",
+    label: "Select Pet",
+    type: "select",
+    model: "selectedPet",
+    required: true,
+    optionsField: "pets", // Indicating that the options will be dynamically populated
+  },
+  {
+    id: "selected_daycare",
+    label: "Select Daycare",
+    type: "select",
+    model: "selectedDaycare",
+    required: true,
+    optionsField: "userDaycares",
+  },
+  {
+    id: "start_time",
+    label: "Start Time",
+    type: "datetime-local",
+    model: "startTime",
+    required: true,
+  },
+  {
+    id: "end_time",
+    label: "End Time",
+    type: "datetime-local",
+    model: "endTime",
+    required: true,
+  },
+  {
+    id: "products",
+    label: "Select Products",
+    type: "multi-checkbox",
+    model: "selectedProducts",
+    required: false,
+    optionsField: "products",
+  },
+];

@@ -3,7 +3,16 @@
   <div>
     <div class="flex-row-space">
       <DateSelector @apply="updateWeekFromDate" />
+      <button @click="showModal" class="button button--tertiary mt-5 pad-5">
+        Add Booking
+      </button>
     </div>
+
+    <BookingModal
+      :isVisible="isModalVisible"
+      @update:isVisible="isModalVisible = $event"
+      :daycareId="daycareId"
+    />
 
     <div class="flex-row-space mb-20 mt-20">
       <button @click="changeWeek(-1)" class="button button--tertiary">
@@ -51,11 +60,13 @@
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import DateSelector from "@/components/DateSelector.vue";
 import { fetchCurrentStaffProfile } from "@/helpers/fetchCurrentStaffProfile";
+import BookingModal from "@/components/BookingModal.vue";
 
 export default {
   name: "HandleDaycareBookings",
   components: {
     DateSelector,
+    BookingModal,
   },
   props: {
     selectedDaycareId: {
@@ -69,6 +80,7 @@ export default {
       daycareId: null,
       startOfWeek: new Date(),
       errorMessage: "",
+      isModalVisible: false,
     };
   },
   computed: {
@@ -112,6 +124,9 @@ export default {
         console.error("Error fetching booking data:", error);
         this.errorMessage = "Failed to fetch bookings. Please try again.";
       }
+    },
+    showModal() {
+      this.isModalVisible = true; // Open the modal
     },
     changeWeek(direction) {
       const newStartOfWeek = new Date(this.startOfWeek);
