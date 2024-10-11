@@ -28,6 +28,9 @@
               v-for="booking in groupedBookings[date.fullDate]"
               :key="booking.id"
               class="shift-card"
+              :class="{
+                'current-user-shift': booking.checked_in === true,
+              }"
             >
               <p class="bold">
                 {{ formatBookingTime(booking.start_time, booking.end_time) }}
