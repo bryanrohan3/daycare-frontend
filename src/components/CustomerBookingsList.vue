@@ -29,17 +29,29 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Add the BookingModal here -->
+    <CustomerBookingModal
+      :isVisible="isModalVisible"
+      @update:isVisible="isModalVisible = false"
+    />
   </div>
 </template>
 
 <script>
 import { endpoints, axiosInstance } from "@/helpers/axiosHelper";
+import BookingModal from "@/components/CustomerBookingModal.vue"; // Import BookingModal
+import CustomerBookingModal from "@/components/CustomerBookingModal.vue";
 
 export default {
   name: "CustomerBookingsList",
+  components: {
+    CustomerBookingModal, // Register the BookingModal component
+  },
   data() {
     return {
       bookings: [],
+      isModalVisible: false, // Add visibility state for the modal
     };
   },
   mounted() {
@@ -53,6 +65,9 @@ export default {
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
+    },
+    showModal() {
+      this.isModalVisible = true; // Show the modal when the button is clicked
     },
   },
 };
