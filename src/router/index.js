@@ -21,17 +21,15 @@ const routes = [
     name: "login",
     component: LoginPage,
   },
-
   {
     path: "/signup",
     name: "signup",
     component: CustomerSignUpPage,
   },
-
   {
     path: "/staff",
     component: StaffLayout,
-    meta: { requiresAuth: true, account_type: "staff" },
+    meta: { requiresAuth: true, account_type: "staff" }, // Only accessible to staff
     children: [
       {
         path: "dashboard",
@@ -63,19 +61,20 @@ const routes = [
         name: "StaffPetProfile",
         component: PetProfilePage,
         props: true,
-        meta: { requiresAuth: true, account_type: "staff" }, // Staff access only
+        meta: { requiresAuth: true, account_type: "staff" }, // Staff only
       },
       {
         path: "bookings",
-        name: "DaycareBookingPage",
+        name: "StaffBookingsPage",
         component: DaycareBookingPage,
+        meta: { requiresAuth: true, account_type: "staff" },
       },
     ],
   },
   {
     path: "/customer",
     component: CustomerLayout,
-    meta: { requiresAuth: true, account_type: "customer" },
+    meta: { requiresAuth: true, account_type: "customer" }, // Only accessible to customers
     children: [
       {
         path: "home",
@@ -92,7 +91,13 @@ const routes = [
         name: "CustomerPetProfile",
         component: PetProfilePage,
         props: true,
-        meta: { requiresAuth: true, account_type: "customer" }, // Customer access only
+        meta: { requiresAuth: true, account_type: "customer" }, // Customer only
+      },
+      {
+        path: "bookings",
+        name: "CustomerBookingsPage",
+        component: DaycareBookingPage,
+        meta: { requiresAuth: true, account_type: "customer" },
       },
     ],
   },
@@ -118,7 +123,7 @@ router.beforeEach((to, from, next) => {
         next("/login"); // Redirect if the user type isn't allowed
       }
     } else if (userAccountType !== to.meta.account_type) {
-      next("/login"); // Redirect if role does not match and it's not an array
+      next("/login"); // Redirect if role does not match
     } else {
       next();
     }

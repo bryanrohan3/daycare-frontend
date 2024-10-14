@@ -1,8 +1,9 @@
 <template>
   <div>
     <div class="flex-row-space gap-10">
-      <p class="h-1">Daycare Bookings</p>
+      <p class="h-1">Bookings</p>
       <EmployeeDaycareDropdown
+        v-if="isStaff"
         :userDaycares="userDaycares"
         :selectedDaycareId="selectedDaycareId"
         @update:selectedDaycareId="updateSelectedDaycareId"
@@ -12,11 +13,14 @@
     <Tabs :tabs="tabs">
       <template v-slot:default="{ currentTab }">
         <div class="mt-20" v-if="currentTab === 'bookings'">
-          <!-- <HandleEmployeeRoster :selectedDaycareId="selectedDaycareId" /> -->
-          <DaycareBookingsList :selectedDaycareId="selectedDaycareId" />
+          <DaycareBookingsList
+            v-if="isStaff"
+            :selectedDaycareId="selectedDaycareId"
+          />
+          <CustomerBookingsList v-else />
         </div>
         <div v-else-if="currentTab === 'waitlist'">
-          <!-- <EmployeeUnavailability :selectedDaycareId="selectedDaycareId" /> -->
+          <!-- Waitlist code goes here -->
         </div>
       </template>
     </Tabs>
@@ -26,8 +30,10 @@
 <script>
 import Tabs from "@/components/Tabs.vue";
 import EmployeeDaycareDropdown from "@/components/EmployeeDaycareDropdown.vue";
-import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import DaycareBookingsList from "@/components/DaycareBookingsList.vue";
+import CustomerBookingsList from "@/components/CustomerBookingsList.vue";
+import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import { mapGetters } from "vuex";
 
 export default {
   name: "DaycareBookingPage",
@@ -35,19 +41,26 @@ export default {
     Tabs,
     EmployeeDaycareDropdown,
     DaycareBookingsList,
+    CustomerBookingsList,
   },
   data() {
     return {
       userDaycares: [],
       selectedDaycareId: null,
       tabs: [
-        { name: "bookings", label: "Daycare Bookings" },
+        { name: "bookings", label: "Bookings" },
         { name: "waitlist", label: "Waitlist" },
       ],
     };
   },
+  computed: {
+    ...mapGetters(["getUserAccountType"]),
+    isStaff() {
+      return this.getUserAccountType === "staff";
+    },
+  },
   async created() {
-    try {
+    if (this.isStaff) {
       const daycares = await this.fetchUserDaycares();
       this.userDaycares = daycares;
 
@@ -56,29 +69,20 @@ export default {
       } else {
         this.selectedDaycareId = null;
       }
-    } catch (error) {
-      console.error("Error fetching user daycares:", error);
     }
-  },
-  watch: {
-    userDaycares(newVal) {
-      if (newVal.length > 0 && this.selectedDaycareId === null) {
-        this.selectedDaycareId = newVal[0].id; // Set a valid daycare ID
-      }
-    },
   },
   methods: {
     async fetchUserDaycares() {
       try {
         const response = await axiosInstance.get(endpoints.currentStaffProfile);
-        return response.data.daycares_names; // Adjust based on your API structure
+        return response.data.daycares_names;
       } catch (error) {
         console.error("Error fetching user daycares:", error);
         return [];
       }
     },
     updateSelectedDaycareId(newId) {
-      this.selectedDaycareId = newId !== null ? String(newId) : null; // Ensure it is a string or null
+      this.selectedDaycareId = newId !== null ? String(newId) : null;
     },
   },
 };

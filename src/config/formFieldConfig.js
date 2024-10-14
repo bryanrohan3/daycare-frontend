@@ -360,6 +360,7 @@ export const petFormFields = [
 export const customerLinks = [
   { name: "home", label: "Home", path: "/customer/home" },
   { name: "pets", label: "Pets", path: "/customer/pets" },
+  { name: "bookings", label: "Bookings", path: "/customer/bookings" },
 ];
 
 export const staffLinks = [

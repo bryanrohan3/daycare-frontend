@@ -63,7 +63,7 @@ import { fetchCurrentStaffProfile } from "@/helpers/fetchCurrentStaffProfile";
 import BookingModal from "@/components/BookingModal.vue";
 
 export default {
-  name: "HandleDaycareBookings",
+  name: "DaycareBookingsList",
   components: {
     DateSelector,
     BookingModal,
