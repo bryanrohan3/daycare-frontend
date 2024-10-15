@@ -1,4 +1,3 @@
-<!-- Need to make this page a componenet as it is reusing same code in HandleEmployeeRoster -->
 <template>
   <div>
     <div class="flex-row-space">
@@ -12,6 +11,9 @@
       :isVisible="isModalVisible"
       @update:isVisible="isModalVisible = $event"
       :daycareId="daycareId"
+      :booking="selectedBooking"
+      :isEdit="isEdit"
+      @saveBooking="fetchBookingData"
     />
 
     <div class="flex-row-space mb-20 mt-20">
@@ -37,9 +39,8 @@
               v-for="booking in groupedBookings[date.fullDate]"
               :key="booking.id"
               class="shift-card"
-              :class="{
-                'current-user-shift': booking.checked_in === true,
-              }"
+              :class="{ 'current-user-shift': booking.checked_in === true }"
+              @click="editBooking(booking.id)"
             >
               <p class="bold">
                 {{ formatBookingTime(booking.start_time, booking.end_time) }}
@@ -81,6 +82,8 @@ export default {
       startOfWeek: new Date(),
       errorMessage: "",
       isModalVisible: false,
+      selectedBooking: null,
+      isEdit: false,
     };
   },
   computed: {
@@ -100,7 +103,7 @@ export default {
     },
     groupedBookings() {
       return this.bookingData.reduce((acc, booking) => {
-        const dateKey = booking.start_time.split("T")[0]; // Group by date
+        const dateKey = booking.start_time.split("T")[0];
         if (!acc[dateKey]) acc[dateKey] = [];
         acc[dateKey].push(booking);
         return acc;
@@ -108,6 +111,19 @@ export default {
     },
   },
   methods: {
+    async editBooking(bookingId) {
+      try {
+        const response = await axiosInstance.get(
+          `${endpoints.bookings}${bookingId}/`
+        );
+        const bookingDetails = response.data;
+        this.selectedBooking = bookingDetails;
+        this.isEdit = true;
+        this.isModalVisible = true;
+      } catch (error) {
+        console.error("Error fetching booking details:", error);
+      }
+    },
     async fetchBookingData() {
       try {
         if (!this.daycareId) return;
@@ -126,7 +142,9 @@ export default {
       }
     },
     showModal() {
-      this.isModalVisible = true; // Open the modal
+      this.isEdit = false;
+      this.selectedBooking = null;
+      this.isModalVisible = true;
     },
     changeWeek(direction) {
       const newStartOfWeek = new Date(this.startOfWeek);

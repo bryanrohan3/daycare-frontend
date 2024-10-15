@@ -91,36 +91,4 @@ export default {
 <style scoped>
 @import "@/utils/flex.scss";
 @import "@/utils/fonts.scss";
-
-.day-header {
-  flex: 1;
-  text-align: center;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.day-column {
-  flex: 1;
-  min-width: 140px;
-  margin-right: 1rem;
-}
-
-.shifts-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.shift-card {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.shift-card p {
-  margin: 0;
-  font-size: 12px;
-}
 </style>

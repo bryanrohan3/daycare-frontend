@@ -1,6 +1,6 @@
 <template>
   <Modal :isVisible="isVisible" @update:isVisible="closeModal">
-    <p class="h-2">Make a Booking</p>
+    <p class="h-2 bold">Make a Booking</p>
 
     <div v-if="currentStep === 1">
       <div v-for="field in createBookingFields" :key="field.id">
