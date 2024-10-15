@@ -40,7 +40,7 @@
               :key="booking.id"
               class="shift-card"
               :class="{ 'current-user-shift': booking.checked_in === true }"
-              @click="editBooking(booking.id)"
+              @click="editBooking(booking)"
             >
               <p class="bold">
                 {{ formatBookingTime(booking.start_time, booking.end_time) }}
@@ -111,18 +111,10 @@ export default {
     },
   },
   methods: {
-    async editBooking(bookingId) {
-      try {
-        const response = await axiosInstance.get(
-          `${endpoints.bookings}${bookingId}/`
-        );
-        const bookingDetails = response.data;
-        this.selectedBooking = bookingDetails;
-        this.isEdit = true;
-        this.isModalVisible = true;
-      } catch (error) {
-        console.error("Error fetching booking details:", error);
-      }
+    editBooking(booking) {
+      this.isEdit = true;
+      this.selectedBooking = booking;
+      this.isModalVisible = true;
     },
     async fetchBookingData() {
       try {

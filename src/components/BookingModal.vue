@@ -1,6 +1,6 @@
 <template>
   <Modal :isVisible="isVisible" @update:isVisible="closeModal">
-    <p class="h-2 bold">Make a Booking</p>
+    <p class="h-2 bold">{{ isEdit ? "Edit Booking" : "Make a Booking" }}</p>
 
     <div v-if="currentStep === 1">
       <div v-for="field in createBookingFields" :key="field.id">
@@ -103,7 +103,7 @@
           Back
         </button>
         <button class="button button--tertiary" @click="confirmBooking">
-          Confirm Booking
+          {{ isEdit ? "Update Booking" : "Confirm Booking" }}
         </button>
       </div>
 
@@ -126,12 +126,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    daycareId: {
+      type: String,
+      required: true,
+    },
+    booking: {
+      type: Object,
+      default: null,
+    },
+    isEdit: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       createBookingFields,
       currentStep: 1,
-      errorMessage: "", // Add errorMessage data property
+      errorMessage: "",
       formModel: {
         customerSearch: "",
         selectedPet: null,
@@ -142,7 +154,7 @@ export default {
       },
       customerResults: [],
       selectedCustomer: {
-        pets: [], // Initialize pets array here
+        pets: [],
       },
       userDaycares: [],
       products: [],
@@ -218,24 +230,30 @@ export default {
       };
 
       try {
-        await axiosInstance.post(endpoints.bookings, bookingData);
+        if (this.isEdit) {
+          await axiosInstance.put(
+            `${endpoints.bookings}${this.booking.id}/`,
+            bookingData
+          );
+        } else {
+          await axiosInstance.post(endpoints.bookings, bookingData);
+        }
+        this.$emit("saveBooking");
         this.closeModal();
-        this.resetForm();
       } catch (error) {
-        // Extract specific error message from the response
         if (error.response && error.response.data) {
           this.errorMessage = Object.values(error.response.data).join(", ");
         } else {
           this.errorMessage = "An unknown error occurred. Please try again.";
         }
-        console.error("Error creating booking:", error);
+        console.error("Error saving booking:", error);
       }
     },
 
     closeModal() {
       this.$emit("update:isVisible", false);
       this.resetForm();
-      this.errorMessage = ""; // Clear error message on modal close
+      this.errorMessage = "";
     },
 
     resetForm() {
@@ -250,11 +268,33 @@ export default {
       this.selectedCustomer = { pets: [] };
       this.currentStep = 1;
     },
+    populateFormData() {
+      this.selectedCustomer = {
+        id: this.booking.customer,
+        pets: [this.booking.pet_details],
+      };
+      this.formModel = {
+        customerSearch: this.booking.customer_details.full_name,
+        selectedPet: this.booking.pet,
+        selectedDaycare: this.booking.daycare,
+        startTime: this.formatDateTimeForInput(this.booking.start_time),
+        endTime: this.formatDateTimeForInput(this.booking.end_time),
+        selectedProducts: this.booking.products,
+      };
+      this.fetchProducts();
+    },
+
+    formatDateTimeForInput(dateTime) {
+      return new Date(dateTime).toISOString().slice(0, 16);
+    },
   },
   watch: {
     isVisible(newVal) {
       if (newVal) {
         this.fetchDaycares();
+        if (this.isEdit && this.booking) {
+          this.populateFormData();
+        }
       }
     },
   },
