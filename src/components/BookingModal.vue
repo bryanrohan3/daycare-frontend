@@ -105,6 +105,18 @@
         <button class="button button--tertiary" @click="confirmBooking">
           {{ isEdit ? "Update Booking" : "Confirm Booking" }}
         </button>
+
+        <!-- These two buttons are not working yet but i have backend endpoints setup -->
+        <button
+          v-if="isEdit"
+          class="button button--tertiary"
+          @click="deleteBooking"
+        >
+          Delete Booking
+        </button>
+        <button v-if="isEdit" class="button button--tertiary" @click="checkIn">
+          Check In
+        </button>
       </div>
 
       <div v-if="errorMessage" class="mt-10 error">{{ errorMessage }}</div>
