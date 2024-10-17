@@ -226,9 +226,25 @@ export default {
         alert("Please select both a pet and a daycare to proceed.");
       }
     },
-
     goToPreviousStep() {
       this.currentStep = 1;
+    },
+
+    async deleteBooking() {
+      try {
+        await axiosInstance.patch(
+          `${endpoints.bookings}${this.booking.id}/cancel_booking/`
+        );
+        this.$emit("saveBooking");
+        this.closeModal();
+      } catch (error) {
+        if (error.response && error.response.data) {
+          this.errorMessage = Object.values(error.response.data).join(", ");
+        } else {
+          this.errorMessage = "An error occurred while deleting the booking.";
+        }
+        console.error("Error deleting booking:", error);
+      }
     },
 
     async confirmBooking() {
