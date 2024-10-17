@@ -167,7 +167,7 @@ export default {
       try {
         const customerProfile = await fetchCurrentCustomerProfile();
 
-        // I need to put this in  the config file
+        // I need to add this into config file ...
         const bookingData = {
           customer: customerProfile.id,
           pet: this.formModel.selectedPet,
@@ -177,10 +177,23 @@ export default {
           products: this.formModel.selectedProducts,
         };
 
-        // Post the booking data
-        await axiosInstance.post(endpoints.bookings, bookingData);
+        const response = await axiosInstance.post(
+          endpoints.bookings,
+          bookingData
+        );
+        const booking = response.data;
+
         this.closeModal();
         this.resetForm();
+
+        if (booking.is_waitlist) {
+          const confirmed = confirm(
+            "The daycare is full. Do you want to be added to the waitlist?"
+          );
+          if (confirmed) {
+            await this.addToWaitlist(booking.id);
+          }
+        }
       } catch (error) {
         if (error.response && error.response.data) {
           this.errorMessage = Object.values(error.response.data).join(", ");
@@ -190,7 +203,17 @@ export default {
         console.error("Error creating booking:", error);
       }
     },
-
+    async addToWaitlist(bookingId) {
+      try {
+        const response = await axiosInstance.post(
+          `${endpoints.bookings}${bookingId}/accept-waitlist/`
+        );
+        alert("You have been successfully added to the waitlist.");
+      } catch (error) {
+        console.error("Error adding to waitlist:", error);
+        this.errorMessage = "Failed to add to the waitlist.";
+      }
+    },
     closeModal() {
       this.$emit("update:isVisible", false);
       this.resetForm();
