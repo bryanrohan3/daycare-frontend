@@ -18,7 +18,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="booking in bookings" :key="booking.id">
+        <tr
+          v-for="booking in bookings"
+          :key="booking.id"
+          @click="confirmDeleteBooking(booking.id)"
+        >
           <td>{{ booking.id }}</td>
           <td>{{ booking.start_time }}</td>
           <td>{{ booking.end_time }}</td>
@@ -30,7 +34,6 @@
       </tbody>
     </table>
 
-    <!-- Add the BookingModal here -->
     <CustomerBookingModal
       :isVisible="isModalVisible"
       @update:isVisible="isModalVisible = false"
@@ -40,18 +43,17 @@
 
 <script>
 import { endpoints, axiosInstance } from "@/helpers/axiosHelper";
-import BookingModal from "@/components/CustomerBookingModal.vue"; // Import BookingModal
 import CustomerBookingModal from "@/components/CustomerBookingModal.vue";
 
 export default {
   name: "CustomerBookingsList",
   components: {
-    CustomerBookingModal, // Register the BookingModal component
+    CustomerBookingModal,
   },
   data() {
     return {
       bookings: [],
-      isModalVisible: false, // Add visibility state for the modal
+      isModalVisible: false,
     };
   },
   mounted() {
@@ -67,7 +69,26 @@ export default {
       }
     },
     showModal() {
-      this.isModalVisible = true; // Show the modal when the button is clicked
+      this.isModalVisible = true;
+    },
+    confirmDeleteBooking(bookingId) {
+      if (confirm(`Do you want to delete booking ID ${bookingId}?`)) {
+        this.deleteBooking(bookingId);
+      }
+    },
+    async deleteBooking(bookingId) {
+      try {
+        await axiosInstance.patch(
+          `${endpoints.bookings}${bookingId}/cancel_booking/`
+        );
+        alert(`Booking ID ${bookingId} has been successfully deleted.`);
+        this.bookings = this.bookings.filter(
+          (booking) => booking.id !== bookingId
+        );
+      } catch (error) {
+        console.error("Error deleting booking:", error);
+        alert(`There was an error deleting booking ID ${bookingId}.`);
+      }
     },
   },
 };
