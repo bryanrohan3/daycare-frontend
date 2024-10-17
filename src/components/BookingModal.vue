@@ -114,10 +114,24 @@
         >
           Delete Booking
         </button>
-        <button v-if="isEdit" class="button button--tertiary" @click="checkIn">
-          Check In
+
+        <button
+          v-if="isEdit"
+          class="button button--tertiary"
+          @click="toggleCheckIn"
+          :disabled="loading"
+        >
+          {{
+            loading
+              ? "Processing..."
+              : booking.checked_in
+              ? "Check Out"
+              : "Check In"
+          }}
         </button>
       </div>
+
+      <div v-if="loading" class="mt-10 fs-12 success">Loading...</div>
 
       <div v-if="errorMessage" class="mt-10 error">{{ errorMessage }}</div>
     </div>
@@ -156,6 +170,7 @@ export default {
       createBookingFields,
       currentStep: 1,
       errorMessage: "",
+      loading: false,
       formModel: {
         customerSearch: "",
         selectedPet: null,
@@ -277,7 +292,24 @@ export default {
         console.error("Error saving booking:", error);
       }
     },
+    async toggleCheckIn() {
+      this.loading = true;
+      try {
+        const endpoint = this.booking.checked_in
+          ? `${endpoints.bookings}${this.booking.id}/check_out/`
+          : `${endpoints.bookings}${this.booking.id}/check_in/`;
 
+        await axiosInstance.patch(endpoint);
+        this.booking.checked_in = !this.booking.checked_in;
+
+        setTimeout(() => {
+          this.loading = false;
+        }, 1000);
+      } catch (error) {
+        this.loading = false;
+        console.error("Error toggling check-in status:", error);
+      }
+    },
     closeModal() {
       this.$emit("update:isVisible", false);
       this.resetForm();
@@ -309,6 +341,7 @@ export default {
         endTime: this.formatDateTimeForInput(this.booking.end_time),
         selectedProducts: this.booking.products,
       };
+      this.booking.check_in = this.booking.check_in;
       this.fetchProducts();
     },
 
