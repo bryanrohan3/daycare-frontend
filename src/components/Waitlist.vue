@@ -9,6 +9,7 @@
           <th>Start Time</th>
           <th>End Time</th>
           <th>Daycare</th>
+          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -21,6 +22,7 @@
           <td>{{ formatDate(waitlistItem.booking.start_time) }}</td>
           <td>{{ formatDate(waitlistItem.booking.end_time) }}</td>
           <td>{{ waitlistItem.booking.daycare }}</td>
+          <td>{{ waitlistItem.booking.status }}</td>
 
           <td v-if="isStaff">
             <button
@@ -32,12 +34,20 @@
           </td>
 
           <td v-if="isCustomer && waitlistItem.customer_notified">
-            <button
-              class="button button--tertiary"
-              @click="acceptBooking(waitlistItem.id)"
-            >
-              Accept
-            </button>
+            <div class="flex gap-10">
+              <button
+                class="button button--tertiary"
+                @click="acceptBooking(waitlistItem.id)"
+              >
+                Accept
+              </button>
+              <button
+                class="button button--tertiary"
+                @click="rejectBooking(waitlistItem.id)"
+              >
+                Decline
+              </button>
+            </div>
           </td>
         </tr>
         <tr v-if="waitlist.length === 0">
@@ -86,12 +96,9 @@ export default {
       try {
         let response;
 
-        // Fetch waitlist for customers (all data)
         if (this.isCustomer) {
           response = await axiosInstance.get(`${endpoints.waitlist}`);
-        }
-        // Fetch waitlist for staff (based on daycareId)
-        else if (this.isStaff && daycareId) {
+        } else if (this.isStaff && daycareId) {
           response = await axiosInstance.get(
             `${endpoints.waitlist}?daycare=${daycareId}`
           );
@@ -134,6 +141,7 @@ export default {
         }
       }
     },
+
     async acceptBooking(waitlistId) {
       try {
         await axiosInstance.patch(
@@ -142,6 +150,17 @@ export default {
         this.fetchWaitlist();
       } catch (error) {
         console.error("Error accepting booking:", error);
+      }
+    },
+
+    async rejectBooking(waitlistId) {
+      try {
+        await axiosInstance.patch(
+          `${endpoints.waitlist}${waitlistId}/reject_booking/`
+        );
+        this.fetchWaitlist();
+      } catch (error) {
+        console.error("Error rejecting booking:", error);
       }
     },
   },
