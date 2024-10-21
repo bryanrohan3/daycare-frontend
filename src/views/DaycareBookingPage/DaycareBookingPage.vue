@@ -20,7 +20,7 @@
           <CustomerBookingsList v-else />
         </div>
         <div v-else-if="currentTab === 'waitlist'">
-          <Waitlist v-if="isStaff" :selectedDaycareId="selectedDaycareId" />
+          <Waitlist :selectedDaycareId="selectedDaycareId" />
         </div>
       </template>
     </Tabs>
