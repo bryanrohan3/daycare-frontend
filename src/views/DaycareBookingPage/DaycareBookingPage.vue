@@ -20,7 +20,7 @@
           <CustomerBookingsList v-else />
         </div>
         <div v-else-if="currentTab === 'waitlist'">
-          <!-- Waitlist code goes here -->
+          <Waitlist v-if="isStaff" :selectedDaycareId="selectedDaycareId" />
         </div>
       </template>
     </Tabs>
@@ -34,6 +34,7 @@ import DaycareBookingsList from "@/components/DaycareBookingsList.vue";
 import CustomerBookingsList from "@/components/CustomerBookingsList.vue";
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import { mapGetters } from "vuex";
+import Waitlist from "@/components/Waitlist.vue";
 
 export default {
   name: "DaycareBookingPage",
@@ -42,6 +43,7 @@ export default {
     EmployeeDaycareDropdown,
     DaycareBookingsList,
     CustomerBookingsList,
+    Waitlist,
   },
   data() {
     return {
