@@ -26,10 +26,18 @@
 
           <td v-if="isStaff">
             <button
+              v-if="!waitlistItem.customer_notified"
               class="button button--tertiary"
               @click="confirmInvite(waitlistItem)"
             >
               Invite
+            </button>
+            <button
+              v-else
+              class="button button--tertiary"
+              @click="uninvite(waitlistItem)"
+            >
+              Invited
             </button>
           </td>
 
@@ -107,6 +115,27 @@ export default {
         this.waitlist = response ? response.data : [];
       } catch (error) {
         console.error("Error fetching waitlist:", error);
+      }
+    },
+    async uninvite(waitlistItem) {
+      const confirmed = confirm(
+        `Are you sure you want to uninvite ${waitlistItem.booking.customer_details.full_name}?`
+      );
+
+      if (confirmed) {
+        try {
+          const waitlistId = waitlistItem.id;
+
+          // Call the API endpoint to uninvite the customer
+          await axiosInstance.patch(
+            `${endpoints.waitlist}${waitlistId}/uninvite_customer/`
+          );
+
+          // Update the local state
+          waitlistItem.customer_notified = false;
+        } catch (error) {
+          console.error("Error uninviting customer:", error);
+        }
       }
     },
 
