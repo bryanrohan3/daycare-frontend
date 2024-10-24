@@ -361,6 +361,11 @@ export const customerLinks = [
   { name: "home", label: "Home", path: "/customer/home" },
   { name: "pets", label: "Pets", path: "/customer/pets" },
   { name: "bookings", label: "Bookings", path: "/customer/bookings" },
+  {
+    name: "social-media",
+    label: "Social Media",
+    path: "/customer/social-media",
+  },
 ];
 
 export const staffLinks = [
@@ -373,6 +378,7 @@ export const staffLinks = [
   { name: "roster", label: "Employee Roster", path: "/staff/roster" },
   { name: "daycares", label: "Daycare", path: "/staff/daycare" },
   { name: "bookings", label: "Bookings", path: "/staff/bookings" },
+  { name: "social-media", label: "Social Media", path: "/staff/social-media" },
 ];
 
 export const createBookingFields = [

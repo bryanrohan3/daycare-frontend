@@ -50,6 +50,7 @@ const endpoints = {
   getPet: (id) => `pet/${id}/`,
   bookings: apiConstants.api_hostname + "booking/",
   waitlist: apiConstants.api_hostname + "waitlist/",
+  posts: apiConstants.api_hostname + "post/",
 };
 
 export { axiosInstance, endpoints };

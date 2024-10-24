@@ -11,6 +11,7 @@ import EmployeeRosterPage from "@/views/EmployeeRosterPage/EmployeeRosterPage.vu
 import CustomerPetPage from "@/views/CustomerPetPage/CustomerPetPage.vue";
 import PetProfilePage from "@/views/PetProfilePage/PetProfilePage.vue";
 import DaycareBookingPage from "@/views/DaycareBookingPage/DaycareBookingPage.vue";
+import SocialMediaFeedPage from "@/views/SocialMediaFeedPage/SocialMediaFeedPage.vue";
 // Layouts
 import StaffLayout from "@/components/layouts/StaffLayout.vue";
 import CustomerLayout from "@/components/layouts/CustomerLayout.vue";
@@ -69,6 +70,12 @@ const routes = [
         component: DaycareBookingPage,
         meta: { requiresAuth: true, account_type: "staff" },
       },
+      {
+        path: "social-media",
+        name: "SocialMediaFeedPage",
+        component: SocialMediaFeedPage,
+        meta: { requiresAuth: true, account_type: "staff" },
+      },
     ],
   },
   {
@@ -99,6 +106,12 @@ const routes = [
         component: DaycareBookingPage,
         meta: { requiresAuth: true, account_type: "customer" },
       },
+      // {
+      //   path: "social-media",
+      //   name: "SocialMediaFeedPage",
+      //   component: SocialMediaFeedPage,
+      //   meta: { requiresAuth: true, account_type: "customer" },
+      // },
     ],
   },
 ];
