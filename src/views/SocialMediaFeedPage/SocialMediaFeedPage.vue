@@ -1,5 +1,6 @@
 <template>
   <div class="mt-30" @scroll.passive="handleScroll">
+    <Comments />
     <div v-if="posts.length > 0">
       <div class="fs-12 mb-30" v-for="post in posts" :key="post.id">
         <p class="h-2 fs-12">{{ post.caption }}</p>
@@ -27,6 +28,7 @@
 
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import Comments from "@/components/Comments.vue";
 
 export default {
   name: "SocialMediaFeedPage",
@@ -36,6 +38,9 @@ export default {
       next: null,
       loading: false,
     };
+  },
+  components: {
+    Comments,
   },
   mounted() {
     this.fetchPosts();
