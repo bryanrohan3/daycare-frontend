@@ -6,16 +6,16 @@
         <p>
           Posted on: {{ new Date(post.date_time_created).toLocaleString() }}
         </p>
-        <p>Status: {{ post.status || "No status" }}</p>
         <p v-if="post.tagged_pets.length > 0">
           Tagged Pets: {{ post.tagged_pets.join(", ") }}
         </p>
         <p v-else>No pets tagged</p>
       </div>
     </div>
-    <p v-else>No posts to display</p>
+    <p class="mt-30 text-center align-centre fs-12" v-else>
+      No posts to display
+    </p>
 
-    <!-- Pagination Controls -->
     <div class="pagination-controls">
       <button @click="fetchPosts(previous)" :disabled="!previous">
         Previous
@@ -38,15 +38,15 @@ export default {
     };
   },
   mounted() {
-    this.fetchPosts(); // Fetch the first page of posts when the component is mounted
+    this.fetchPosts();
   },
   methods: {
     async fetchPosts(pageUrl = endpoints.posts) {
       try {
         const response = await axiosInstance.get(pageUrl);
-        this.posts = response.data.results; // Use the results field from the paginated data
-        this.next = response.data.next; // Set the next page URL
-        this.previous = response.data.previous; // Set the previous page URL
+        this.posts = response.data.results;
+        this.next = response.data.next;
+        this.previous = response.data.previous;
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
