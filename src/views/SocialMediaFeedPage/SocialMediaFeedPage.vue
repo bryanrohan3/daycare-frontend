@@ -14,6 +14,14 @@
       </div>
     </div>
     <p v-else>No posts to display</p>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+      <button @click="fetchPosts(previous)" :disabled="!previous">
+        Previous
+      </button>
+      <button @click="fetchPosts(next)" :disabled="!next">Next</button>
+    </div>
   </div>
 </template>
 
@@ -25,16 +33,20 @@ export default {
   data() {
     return {
       posts: [],
+      next: null,
+      previous: null,
     };
   },
   mounted() {
-    this.fetchPosts();
+    this.fetchPosts(); // Fetch the first page of posts when the component is mounted
   },
   methods: {
-    async fetchPosts() {
+    async fetchPosts(pageUrl = endpoints.posts) {
       try {
-        const response = await axiosInstance.get(endpoints.posts);
-        this.posts = response.data;
+        const response = await axiosInstance.get(pageUrl);
+        this.posts = response.data.results; // Use the results field from the paginated data
+        this.next = response.data.next; // Set the next page URL
+        this.previous = response.data.previous; // Set the previous page URL
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -43,4 +55,11 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.pagination-controls {
+  margin-top: 20px;
+}
+button {
+  margin-right: 10px;
+}
+</style>
