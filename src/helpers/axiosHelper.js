@@ -52,6 +52,7 @@ const endpoints = {
   waitlist: apiConstants.api_hostname + "waitlist/",
   posts: apiConstants.api_hostname + "post/",
   comments: apiConstants.api_hostname + "comment/",
+  like: apiConstants.api_hostname + "like/",
 };
 
 export { axiosInstance, endpoints };
