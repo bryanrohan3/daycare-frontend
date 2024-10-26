@@ -9,18 +9,27 @@
     >
       <template v-slot:default>
         <div>
-          <h3>Comments for Post {{ postId }}</h3>
+          <p class="h-2">Comments for Post {{ postId }}</p>
           <div v-if="comments.length > 0">
             <div
               v-for="comment in comments"
               :key="comment.id"
               class="p-10 mb-10"
             >
-              <p>{{ comment.text }}</p>
-              <p>Posted by User: {{ comment.user }}</p>
-              <p>
-                On: {{ new Date(comment.date_time_created).toLocaleString() }}
-              </p>
+              <div class="flex-row-space">
+                <p class="fs-12 bold">{{ comment.user.username }}</p>
+                <p>
+                  {{ new Date(comment.date_time_created).toLocaleString() }}
+                </p>
+                <!-- Delete button -->
+                <button
+                  class="button button--tertiary"
+                  @click="deleteComment(comment.id)"
+                >
+                  Delete
+                </button>
+              </div>
+              <p class="mx-auto mb-20">{{ comment.text }}</p>
             </div>
           </div>
           <p v-else>No comments yet.</p>
@@ -51,14 +60,6 @@ export default {
       isModalVisible: false,
     };
   },
-  watch: {
-    postId: {
-      immediate: true,
-      handler() {
-        this.fetchComments();
-      },
-    },
-  },
   methods: {
     async fetchComments() {
       try {
@@ -71,7 +72,20 @@ export default {
       }
     },
     openModal() {
+      // Fetch comments when opening the modal
+      this.fetchComments();
       this.isModalVisible = true;
+    },
+    async deleteComment(commentId) {
+      try {
+        await axiosInstance.patch(
+          `${endpoints.comments}/${commentId}/soft_delete/`
+        );
+        // Refresh comments after deletion
+        this.fetchComments();
+      } catch (error) {
+        console.error("Error deleting comment:", error);
+      }
     },
   },
 };

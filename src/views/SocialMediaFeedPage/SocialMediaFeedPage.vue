@@ -9,12 +9,13 @@
         <p>Post: {{ post.id }}</p>
         <p>Status: {{ post.status || "No status" }}</p>
         <p>Daycare: {{ post.daycare.daycare_name }}</p>
-        <p v-if="post.tagged_pets.length > 0">
-          Tagged Pets: {{ post.tagged_pets.join(", ") }}
-        </p>
-        <p v-else>No pets tagged</p>
+        <p>
+          <span v-if="post.pet_names.length > 0">
+            {{ post.pet_names.map((pet) => pet.pet_name).join(", ") }}
+          </span>
 
-        <Comments :postId="post.id" />
+          <Comments :postId="post.id" />
+        </p>
       </div>
     </div>
     <p class="mt-30 text-center align-center fs-12" v-else>
