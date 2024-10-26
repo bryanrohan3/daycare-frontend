@@ -2,17 +2,16 @@
   <div class="mt-30 align-center justify-center" @scroll.passive="handleScroll">
     <div v-if="posts.length > 0">
       <div class="fs-12 mb-30" v-for="post in posts" :key="post.id">
-        <p class="h-2 fs-12">{{ post.caption }}</p>
-        <p>
-          Posted on: {{ new Date(post.date_time_created).toLocaleString() }}
+        <div class="flex-row-space">
+        <p class="bold">{{ post.daycare.daycare_name }}</p>
+        <p>{{ new Date(post.date_time_created).toLocaleString() }} ({{ post.status || "No status" }})
         </p>
-        <p>Post: {{ post.id }}</p>
-        <p>Status: {{ post.status || "No status" }}</p>
-        <p>Daycare: {{ post.daycare.daycare_name }}</p>
+        </div>
         <p>
           <span v-if="post.pet_names.length > 0">
             {{ post.pet_names.map((pet) => pet.pet_name).join(", ") }}
           </span>
+          <p class="h-2 fs-12">{{ post.caption }}</p>
 
           <Comments :postId="post.id" />
         </p>

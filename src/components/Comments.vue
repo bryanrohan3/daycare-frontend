@@ -1,8 +1,6 @@
 <template>
   <div>
-    <button class="button button--tertiary" @click="openModal">
-      View Comments
-    </button>
+    <p class="fs-12 pointer" @click="openModal">View Comments</p>
     <Modal
       :isVisible="isModalVisible"
       @update:isVisible="isModalVisible = $event"
@@ -10,6 +8,20 @@
       <template v-slot:default>
         <div>
           <p class="h-2">Comments for Post {{ postId }}</p>
+
+          <div class="align-center flex gap-10 mb-20">
+            <input
+              v-model="commentText"
+              type="text"
+              placeholder="Add a comment..."
+              class="comment-input p-10"
+            />
+            <button @click="addComment" class="button button--tertiary">
+              Send
+            </button>
+          </div>
+
+          <!-- Display Comments -->
           <div v-if="comments.length > 0">
             <div
               v-for="comment in comments"
@@ -58,6 +70,7 @@ export default {
     return {
       comments: [],
       isModalVisible: false,
+      commentText: "",
     };
   },
   methods: {
@@ -72,16 +85,30 @@ export default {
       }
     },
     openModal() {
-      // Fetch comments when opening the modal
       this.fetchComments();
       this.isModalVisible = true;
+    },
+    async addComment() {
+      if (!this.commentText.trim()) {
+        return;
+      }
+
+      try {
+        await axiosInstance.post(`${endpoints.comments}`, {
+          post: this.postId,
+          text: this.commentText,
+        });
+        this.commentText = "";
+        this.fetchComments();
+      } catch (error) {
+        console.error("Error adding comment:", error);
+      }
     },
     async deleteComment(commentId) {
       try {
         await axiosInstance.patch(
           `${endpoints.comments}/${commentId}/soft_delete/`
         );
-        // Refresh comments after deletion
         this.fetchComments();
       } catch (error) {
         console.error("Error deleting comment:", error);
@@ -90,3 +117,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.comment-input {
+  flex-grow: 1;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  border-radius: 0px;
+}
+</style>
