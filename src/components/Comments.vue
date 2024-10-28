@@ -49,13 +49,13 @@
                 <div v-if="comment.showOptions" class="options-menu">
                   <button
                     @click="startEditingComment(comment)"
-                    class="option-item"
+                    class="option-item pointer"
                   >
                     Edit
                   </button>
                   <button
                     @click="deleteComment(comment.id)"
-                    class="option-item"
+                    class="option-item pointer"
                   >
                     Delete
                   </button>
@@ -205,7 +205,6 @@ export default {
 .option-item {
   display: block;
   padding: 5px 10px;
-  cursor: pointer;
   background-color: transparent;
   border: none;
 }
