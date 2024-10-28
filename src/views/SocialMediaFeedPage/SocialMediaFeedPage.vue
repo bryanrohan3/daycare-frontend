@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-30 align-center justify-center" @scroll.passive="handleScroll">
+  <div class="mt-20 align-center justify-center" @scroll.passive="handleScroll">
     <div v-if="posts.length > 0">
       <div class="fs-12 mb-30" v-for="post in posts" :key="post.id">
         <div class="flex-row-space">
