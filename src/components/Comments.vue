@@ -24,7 +24,7 @@
           <!-- Display Comments -->
           <div v-if="comments.length > 0">
             <div
-              v-for="comment in comments"
+              v-for="(comment, index) in comments"
               :key="comment.id"
               class="p-10 mb-10"
             >
@@ -33,15 +33,52 @@
                 <p>
                   {{ new Date(comment.date_time_created).toLocaleString() }}
                 </p>
-                <!-- Delete button -->
+
                 <button
+                  v-if="
+                    comment.user.id === currentUserId ||
+                    currentUserId === postOwnerId
+                  "
+                  @click="toggleOptions(index)"
                   class="button button--tertiary"
-                  @click="deleteComment(comment.id)"
                 >
-                  Delete
+                  ...
+                </button>
+
+                <!-- Options menu -->
+                <div v-if="comment.showOptions" class="options-menu">
+                  <button
+                    @click="startEditingComment(comment)"
+                    class="option-item"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click="deleteComment(comment.id)"
+                    class="option-item"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <!-- Display comment text or input if editing -->
+              <p v-if="!comment.isEditing" class="mx-auto mb-20">
+                {{ comment.text }}
+              </p>
+              <div v-else class="flex align-center gap-10">
+                <input
+                  v-model="comment.editText"
+                  type="text"
+                  class="comment-input p-10"
+                />
+                <button
+                  @click="updateComment(comment)"
+                  class="button button--tertiary"
+                >
+                  Save
                 </button>
               </div>
-              <p class="mx-auto mb-20">{{ comment.text }}</p>
             </div>
           </div>
           <p v-else>No comments yet.</p>
@@ -65,6 +102,14 @@ export default {
       type: Number,
       required: true,
     },
+    currentUserId: {
+      type: Number,
+      required: true,
+    },
+    postOwnerId: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
@@ -79,7 +124,12 @@ export default {
         const response = await axiosInstance.get(
           `${endpoints.comments}?post=${this.postId}`
         );
-        this.comments = response.data;
+        this.comments = response.data.map((comment) => ({
+          ...comment,
+          showOptions: false,
+          isEditing: false,
+          editText: comment.text,
+        }));
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
@@ -88,11 +138,13 @@ export default {
       this.fetchComments();
       this.isModalVisible = true;
     },
+    toggleOptions(index) {
+      this.comments[index].showOptions = !this.comments[index].showOptions;
+    },
     async addComment() {
       if (!this.commentText.trim()) {
         return;
       }
-
       try {
         await axiosInstance.post(`${endpoints.comments}`, {
           post: this.postId,
@@ -102,6 +154,22 @@ export default {
         this.fetchComments();
       } catch (error) {
         console.error("Error adding comment:", error);
+      }
+    },
+    startEditingComment(comment) {
+      comment.isEditing = true;
+      comment.showOptions = false;
+    },
+    async updateComment(comment) {
+      if (!comment.editText.trim()) return;
+      try {
+        await axiosInstance.patch(`${endpoints.comments}${comment.id}/`, {
+          text: comment.editText,
+        });
+        comment.text = comment.editText;
+        comment.isEditing = false;
+      } catch (error) {
+        console.error("Error updating comment:", error);
       }
     },
     async deleteComment(commentId) {
@@ -124,5 +192,25 @@ export default {
   border: none;
   border-bottom: 1px solid #ccc;
   border-radius: 0px;
+}
+
+.options-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.option-item {
+  display: block;
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+}
+
+.option-item:hover {
+  background-color: #f0f0f0;
 }
 </style>

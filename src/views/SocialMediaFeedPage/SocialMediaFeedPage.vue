@@ -21,7 +21,6 @@
       No posts to display
     </p>
 
-    <!-- Loading spinner for infinite scroll -->
     <div v-if="loading" class="text-center mt-30">
       <p>Loading more posts...</p>
     </div>
