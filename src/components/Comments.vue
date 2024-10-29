@@ -35,10 +35,6 @@
                 </p>
 
                 <button
-                  v-if="
-                    comment.user.id === currentUserId ||
-                    currentUserId === postOwnerId
-                  "
                   @click="toggleOptions(index)"
                   class="button button--tertiary"
                 >
@@ -103,10 +99,6 @@ export default {
       required: true,
     },
     currentUserId: {
-      type: Number,
-      required: true,
-    },
-    postOwnerId: {
       type: Number,
       required: true,
     },

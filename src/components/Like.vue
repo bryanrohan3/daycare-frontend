@@ -24,41 +24,38 @@ export default {
   },
   data() {
     return {
-      liked: this.initialLiked,
+      liked: this.initialLiked, // Set initial liked status from props
     };
   },
-  mounted() {
-    this.fetchLikeStatus();
-  },
   methods: {
-    async fetchLikeStatus() {
-      try {
-        const response = await axiosInstance.get(`${endpoints.like}`, {
-          params: { post: this.postId },
-        });
-        if (response.data) {
-          this.liked = response.data.liked;
-        }
-      } catch (error) {
-        console.error("Error fetching like status:", error);
-      }
-    },
     async toggleLike() {
+      console.log("Current liked status:", this.liked);
       try {
         if (this.liked) {
-          await axiosInstance.delete(endpoints.like, {
-            data: { post: this.postId },
-          });
-          this.liked = false;
+          console.log("Unliking post:", this.postId);
+          const response = await axiosInstance.delete(
+            `${endpoints.like}?post=${this.postId}`
+            // this is wrong -> need to be api/like/3/ 3 = likeId
+          );
+          console.log("Unliked response:", response);
+          this.liked = false; // Update local state to reflect unliking
         } else {
-          await axiosInstance.post(endpoints.like, { post: this.postId });
-          this.liked = true;
+          console.log("Liking post:", this.postId);
+          const response = await axiosInstance.post(
+            `${endpoints.like}?post=${this.postId}`
+          );
+          console.log("Liked response:", response);
+          this.liked = true; // Update local state to reflect liking
         }
+        console.log("Updated liked status:", this.liked);
+
+        // Emit an event to notify the parent component about the change
         this.$emit("update-like", {
+          postId: this.postId,
           liked: this.liked,
         });
       } catch (error) {
-        console.error("Error toggling like:", error);
+        console.error("Error toggling like:", error.response.data); // Log error response data for better debugging
       }
     },
   },
