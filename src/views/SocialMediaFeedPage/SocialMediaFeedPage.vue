@@ -2,7 +2,11 @@
   <div
     class="mt-20 align-center justify-center"
     @scroll.passive="handleScroll"
-    style="overflow-y: auto; max-height: 100vh"
+    style="
+      overflow-y: auto;
+      max-height: 100vh;
+      scrollbar-color: #f5f5f5 #f5f5f5;
+    "
     ref="scrollContainer"
   >
     <button
@@ -83,6 +87,7 @@ export default {
       loading: false,
       isCreatePostModalVisible: false,
       currentUserId: null,
+      userDaycares: [],
     };
   },
   components: {
@@ -92,14 +97,24 @@ export default {
     Modal,
   },
   async mounted() {
-    this.fetchPosts();
     this.currentUserId = await this.getCurrentUserId();
+    this.userDaycares = await this.fetchUserDaycares();
+    this.fetchPosts(); // Moved this to be after user fetch
     this.$refs.scrollContainer.addEventListener("scroll", this.handleScroll);
   },
   beforeDestroy() {
     this.$refs.scrollContainer.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
+    async fetchUserDaycares() {
+      try {
+        const response = await axiosInstance.get(endpoints.userDaycares);
+        return response.data;
+      } catch (error) {
+        console.error("Failed to fetch user daycares:", error);
+        return [];
+      }
+    },
     openCreatePostModal() {
       this.isCreatePostModalVisible = true;
     },
@@ -123,6 +138,7 @@ export default {
           ...response.data.results.map((post) => ({
             ...post,
             showTaggedUsers: false,
+            liked: post.liked, // Ensure this reflects the actual liked state
           })),
         ];
         this.next = response.data.next;
@@ -155,8 +171,14 @@ export default {
     handleLikeUpdate({ postId, liked, likeId }) {
       const post = this.posts.find((p) => p.id === postId);
       if (post) {
-        post.liked = liked;
-        post.like_id = likeId;
+        post.liked = liked; // Update the liked state
+        if (liked) {
+          post.like_count += 1; // Increment like count
+          post.likeId = likeId; // Update likeId if needed
+        } else {
+          post.like_count -= 1; // Decrement like count
+          post.likeId = null; // Reset likeId
+        }
       }
     },
   },
