@@ -2,21 +2,30 @@
   <div>
     <p class="h-2 bold">Create a New Post</p>
     <form @submit.prevent="createPost">
-      <div class="form-group">
-        <label for="daycare">Daycare ID:</label>
-        <input type="number" v-model="daycare" required />
-      </div>
+      <div class="form-group" v-for="field in createPostFields" :key="field.id">
+        <label class="mt-10" :for="field.id">{{ field.label }}:</label>
+        <input
+          v-if="field.model !== 'daycare'"
+          :type="field.type"
+          v-model="formData[field.model]"
+          :required="field.required"
+          :placeholder="field.placeholder || ''"
+        />
 
-      <div class="form-group">
-        <label class="mt-10" for="caption">Caption:</label>
-        <input type="text" v-model="caption" required />
-      </div>
-
-      <div class="form-group">
-        <label class="mt-10" for="taggedPets"
-          >Tagged Pets (IDs, comma-separated):</label
+        <select
+          v-if="field.model === 'daycare'"
+          v-model="formData.daycare"
+          :required="field.required"
         >
-        <input type="text" v-model="taggedPets" placeholder="Optional" />
+          <option value="" disabled>Select a daycare</option>
+          <option
+            v-for="daycare in daycares"
+            :key="daycare.id"
+            :value="daycare.id"
+          >
+            {{ daycare.daycare_name }}
+          </option>
+        </select>
       </div>
 
       <div class="flex-row-space">
@@ -37,29 +46,45 @@
 
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
+import { createPostFields } from "@/config/formFieldConfig";
 
 export default {
   name: "CreatePost",
   data() {
     return {
-      daycare: "",
-      caption: "",
-      taggedPets: "",
+      formData: {
+        daycare: "",
+        caption: "",
+        taggedPets: "",
+      },
+      createPostFields,
+      daycares: [],
     };
   },
+  created() {
+    this.fetchDaycares();
+  },
   methods: {
+    async fetchDaycares() {
+      try {
+        const response = await axiosInstance.get(endpoints.currentStaffProfile);
+        this.daycares = response.data.daycares_names;
+      } catch (error) {
+        console.error("Error fetching daycares:", error);
+      }
+    },
     async createPost() {
       try {
-        const daycareId = parseInt(this.daycare, 10);
+        const daycareId = parseInt(this.formData.daycare, 10);
         if (!daycareId) {
           throw new Error("Daycare ID is required.");
         }
 
         const data = {
-          daycare: daycareId, // Ensure daycare is a valid integer ID
-          caption: this.caption,
-          tagged_pets: this.taggedPets
-            ? this.taggedPets.split(",").map(Number)
+          daycare: daycareId,
+          caption: this.formData.caption,
+          tagged_pets: this.formData.taggedPets
+            ? this.formData.taggedPets.split(",").map(Number)
             : [],
         };
 

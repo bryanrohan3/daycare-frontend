@@ -428,3 +428,27 @@ export const createBookingFields = [
     optionsField: "products",
   },
 ];
+
+export const createPostFields = [
+  {
+    id: "daycare",
+    label: "Daycare ID",
+    type: "number",
+    model: "daycare",
+    required: true,
+  },
+  {
+    id: "caption",
+    label: "Caption",
+    type: "text",
+    model: "caption",
+    required: true,
+  },
+  {
+    id: "taggedPets",
+    label: "Tagged Pets (IDs, comma-separated)",
+    type: "text",
+    model: "taggedPets",
+    required: false,
+  },
+];
