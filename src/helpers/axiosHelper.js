@@ -53,6 +53,7 @@ const endpoints = {
   posts: apiConstants.api_hostname + "post/",
   comments: apiConstants.api_hostname + "comment/",
   like: apiConstants.api_hostname + "like/",
+  pets: apiConstants.api_hostname + "pet/",
 };
 
 export { axiosInstance, endpoints };

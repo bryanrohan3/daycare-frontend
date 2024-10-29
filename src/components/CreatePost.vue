@@ -28,6 +28,26 @@
         </select>
       </div>
 
+      <div class="form-group">
+        <label class="mt-10" for="taggedPets">Search for Tagged Pets:</label>
+        <input
+          type="text"
+          v-model="searchQuery"
+          @input="debouncedSearchPets"
+          placeholder="Search pets..."
+        />
+        <ul v-if="searchResults.length > 0" class="search-results">
+          <li
+            v-for="pet in searchResults"
+            :key="pet.id"
+            @click="togglePetSelection(pet.id)"
+            :class="{ selected: selectedPetIds.includes(pet.id) }"
+          >
+            {{ pet.pet_name }}
+          </li>
+        </ul>
+      </div>
+
       <div class="flex-row-space">
         <button type="submit" class="button button--tertiary mt-10">
           Post
@@ -47,6 +67,7 @@
 <script>
 import { axiosInstance, endpoints } from "@/helpers/axiosHelper";
 import { createPostFields } from "@/config/formFieldConfig";
+import debounce from "lodash.debounce";
 
 export default {
   name: "CreatePost",
@@ -59,10 +80,15 @@ export default {
       },
       createPostFields,
       daycares: [],
+      searchQuery: "",
+      searchResults: [],
+      selectedPetIds: [],
+      debouncedSearchPets: null,
     };
   },
   created() {
     this.fetchDaycares();
+    this.debouncedSearchPets = debounce(this.searchPets, 300);
   },
   methods: {
     async fetchDaycares() {
@@ -72,6 +98,31 @@ export default {
       } catch (error) {
         console.error("Error fetching daycares:", error);
       }
+    },
+    async searchPets() {
+      if (!this.searchQuery) {
+        this.searchResults = [];
+        return;
+      }
+      try {
+        const response = await axiosInstance.get(
+          `${endpoints.pets}?pet_name=${this.searchQuery}`
+        );
+        this.searchResults = response.data;
+      } catch (error) {
+        console.error("Error searching pets:", error);
+      }
+    },
+    togglePetSelection(petId) {
+      const index = this.selectedPetIds.indexOf(petId);
+      if (index > -1) {
+        // Pet is already selected, remove it
+        this.selectedPetIds.splice(index, 1);
+      } else {
+        // Pet is not selected, add it
+        this.selectedPetIds.push(petId);
+      }
+      this.formData.taggedPets = this.selectedPetIds.join(",");
     },
     async createPost() {
       try {
@@ -83,9 +134,7 @@ export default {
         const data = {
           daycare: daycareId,
           caption: this.formData.caption,
-          tagged_pets: this.formData.taggedPets
-            ? this.formData.taggedPets.split(",").map(Number)
-            : [],
+          tagged_pets: this.selectedPetIds,
         };
 
         await axiosInstance.post(endpoints.posts, data);
