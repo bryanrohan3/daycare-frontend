@@ -138,7 +138,7 @@ export default {
           ...response.data.results.map((post) => ({
             ...post,
             showTaggedUsers: false,
-            liked: post.liked, // Ensure this reflects the actual liked state
+            liked: post.liked,
           })),
         ];
         this.next = response.data.next;
@@ -168,17 +168,12 @@ export default {
         this.fetchPosts(this.next);
       }
     },
-    handleLikeUpdate({ postId, liked, likeId }) {
+    handleLikeUpdate({ postId, liked, likeCount, likeId }) {
       const post = this.posts.find((p) => p.id === postId);
       if (post) {
-        post.liked = liked; // Update the liked state
-        if (liked) {
-          post.like_count += 1; // Increment like count
-          post.likeId = likeId; // Update likeId if needed
-        } else {
-          post.like_count -= 1; // Decrement like count
-          post.likeId = null; // Reset likeId
-        }
+        post.liked = liked;
+        post.like_count = likeCount;
+        post.likeId = liked ? likeId : null;
       }
     },
   },

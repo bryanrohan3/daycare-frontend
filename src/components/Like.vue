@@ -21,41 +21,53 @@ export default {
       type: Boolean,
       default: false,
     },
+    initialLikeCount: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
-      liked: this.initialLiked, // Set initial liked status from props
+      liked: this.initialLiked,
+      likeCount: this.initialLikeCount,
+      likeId: null,
     };
+  },
+  watch: {
+    initialLiked(newVal) {
+      this.liked = newVal;
+    },
   },
   methods: {
     async toggleLike() {
-      console.log("Current liked status:", this.liked);
       try {
         if (this.liked) {
-          console.log("Unliking post:", this.postId);
-          const response = await axiosInstance.delete(
-            `${endpoints.like}?post=${this.postId}`
-            // this is wrong -> need to be api/like/3/ 3 = likeId
-          );
-          console.log("Unliked response:", response);
-          this.liked = false; // Update local state to reflect unliking
+          if (this.likeId) {
+            const response = await axiosInstance.delete(
+              `${endpoints.like}${this.likeId}`
+            );
+          } else {
+            console.warn("likeId is undefined, can't unlike");
+          }
+          this.liked = false;
+          this.likeCount--;
         } else {
-          console.log("Liking post:", this.postId);
           const response = await axiosInstance.post(
             `${endpoints.like}?post=${this.postId}`
           );
-          console.log("Liked response:", response);
-          this.liked = true; // Update local state to reflect liking
+          this.liked = true;
+          this.likeCount++;
+          this.likeId = response.data.id;
         }
-        console.log("Updated liked status:", this.liked);
 
-        // Emit an event to notify the parent component about the change
         this.$emit("update-like", {
           postId: this.postId,
           liked: this.liked,
+          likeCount: this.likeCount,
+          likeId: this.liked ? this.likeId : null,
         });
       } catch (error) {
-        console.error("Error toggling like:", error.response.data); // Log error response data for better debugging
+        console.error("Error toggling like:", error.response.data);
       }
     },
   },
