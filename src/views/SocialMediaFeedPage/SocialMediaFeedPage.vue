@@ -44,6 +44,7 @@
           :postId="post.id"
           :initialLiked="post.liked"
           :initialLikeCount="post.like_count"
+          :initialLikeId="post.likeId"
           @update-like="handleLikeUpdate"
         />
       </div>
@@ -138,7 +139,8 @@ export default {
           ...response.data.results.map((post) => ({
             ...post,
             showTaggedUsers: false,
-            liked: post.liked,
+            liked: post.liked || false,
+            likeId: post.like_id || null, // Ensure likeId is captured from API response
           })),
         ];
         this.next = response.data.next;
@@ -168,12 +170,11 @@ export default {
         this.fetchPosts(this.next);
       }
     },
-    handleLikeUpdate({ postId, liked, likeCount, likeId }) {
+    handleLikeUpdate({ postId, liked, likeId }) {
       const post = this.posts.find((p) => p.id === postId);
       if (post) {
         post.liked = liked;
-        post.like_count = likeCount;
-        post.likeId = liked ? likeId : null;
+        post.likeId = liked ? likeId : null; // Clear likeId if unliked
       }
     },
   },

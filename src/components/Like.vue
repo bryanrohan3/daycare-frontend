@@ -21,16 +21,16 @@ export default {
       type: Boolean,
       default: false,
     },
-    initialLikeCount: {
+    initialLikeId: {
       type: Number,
-      default: 0,
+      default: null,
     },
   },
+
   data() {
     return {
       liked: this.initialLiked,
-      likeCount: this.initialLikeCount,
-      likeId: null,
+      likeId: this.initialLikeId,
     };
   },
   watch: {
@@ -43,31 +43,31 @@ export default {
       try {
         if (this.liked) {
           if (this.likeId) {
-            const response = await axiosInstance.delete(
-              `${endpoints.like}${this.likeId}`
-            );
+            await axiosInstance.delete(`${endpoints.like}${this.likeId}/`);
+            this.liked = false;
+            this.likeId = null;
           } else {
-            console.warn("likeId is undefined, can't unlike");
+            console.warn("Cannot unlike as likeId is missing");
           }
-          this.liked = false;
-          this.likeCount--;
         } else {
           const response = await axiosInstance.post(
             `${endpoints.like}?post=${this.postId}`
           );
           this.liked = true;
-          this.likeCount++;
           this.likeId = response.data.id;
         }
 
+        // Emit the like status
         this.$emit("update-like", {
           postId: this.postId,
           liked: this.liked,
-          likeCount: this.likeCount,
-          likeId: this.liked ? this.likeId : null,
+          likeId: this.likeId,
         });
       } catch (error) {
-        console.error("Error toggling like:", error.response.data);
+        console.error(
+          "Error toggling like:",
+          error.response?.data || error.message
+        );
       }
     },
   },
